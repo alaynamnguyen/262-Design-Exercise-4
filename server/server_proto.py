@@ -1,3 +1,4 @@
+import argparse
 import grpc
 import sys
 import os
@@ -20,6 +21,9 @@ config.read("config.ini")
 
 HOST = config["network"]["host"]
 PORT = int(config["network"]["port"])
+
+mode = None
+leader_ip = None
 
 def load_users_and_messages():
     """Loads user data from the JSON file."""
@@ -54,6 +58,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
     def __init__(self):
         """Initializes the ChatService with user and message data."""
         self.users_dict, self.messages_dict = load_users_and_messages()
+        self.replicas = [f"{HOST}:{PORT}"] # list of replicas (including leader)
 
     def LoginUsername(self, request, context):
         """Handles username lookup to check if a user exists."""
@@ -135,15 +140,39 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         success, _ = delete_messages(self.users_dict, self.messages_dict, request.mids, uid=request.uid)
         return chat_pb2.DeleteMessagesResponse(success=success)
     
-def serve():
+    def RegisterReplica(self, request, context):
+        print("Calling RegisterReplica")
+        self.replicas.append(f"{request.ip_address}:{request.port}")
+        return chat_pb2.RegisterReplicaResponse(success=True, replica_list=self.replicas)
+    
+def serve(args):
     """Starts the gRPC server with only login flow."""
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     chat_pb2_grpc.add_ChatServiceServicer_to_server(ChatService(), server)
     server_address = f"{HOST}:{PORT}"  # Use HOST and PORT from config.ini
     server.add_insecure_port(server_address)
+    if args.mode == "l":
+        print("Leader mode, leader IP:", server_address)
+    else:
+        print("Replica mode, replica IP", server_address, "leader IP", leader_ip)
+        with grpc.insecure_channel(leader_ip) as channel:
+            stub = chat_pb2_grpc.ChatServiceStub(channel)
+            request = chat_pb2.RegisterReplicaRequest(ip_address=HOST, port=PORT)
+            response = stub.RegisterReplica(request)
+            print("@@@@@@@@")
+            print(response)
     server.start()
     print(f"Server Proto started on port {PORT}...")
     server.wait_for_termination()
+    # TODO: add port as cmd line arg, test some more, implement leader election
 
 if __name__ == "__main__":
-    serve()
+    parser = argparse.ArgumentParser(description="Start the Chat Client with optional parameters.")
+    parser.add_argument("--leader-ip", type=str, help="Specify the leader IP address")
+    parser.add_argument("--mode", type=str, required=True, choices=["l", "r"], help="Specify the mode (leader or replica)")
+    parser.add_argument("--port", type=str, required=True, choices=["l", "r"], help="Specify the mode (leader or replica)")
+
+    args = parser.parse_args()
+    mode = args.mode
+    leader_ip = args.leader_ip
+    serve(args)

@@ -18,6 +18,50 @@ service ChatService {
     rpc GetMessageByMid(GetMessageRequest) returns (GetMessageResponse);
     rpc MarkMessageRead(MarkMessageReadRequest) returns (MarkMessageReadResponse);
     rpc DeleteMessages(DeleteMessagesRequest) returns (DeleteMessagesResponse);
+
+    // Replicas
+    rpc RegisterReplica(RegisterReplicaRequest) returns (RegisterReplicaResponse);
+    rpc SyncMessagesWithReplica(ReplicaSyncRequest) returns (ReplicaSyncResponse);  // TODO: leader push notification to replica or replica periodically pull for updates?
+    rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    rpc ElectLeader(ElectLeaderRequest) returns (ElectLeaderResponse);
+}
+
+// Replica flow
+
+message RegisterReplicaRequest {
+    string ip_address = 1;
+    int32 port = 2;
+}
+
+message RegisterReplicaResponse {
+    bool success = 1;
+    repeated string replica_list = 2;  // ["ip:port", ...]
+}
+
+message ReplicaSyncRequest {
+    repeated MessageData messages = 1;
+}
+
+message ReplicaSyncResponse {
+    bool success = 1;
+}
+
+message HeartbeatRequest {
+    string server_id = 1;
+}
+
+message HeartbeatResponse {
+    bool success = 1;
+}
+
+message ElectLeaderRequest {
+    string server_id = 1;  // Server requesting election
+    int64 term = 2;  // Logical term for election
+}
+
+message ElectLeaderResponse {
+    bool success = 1;
+    string new_leader_id = 2;
 }
 
 // Login flow
@@ -38,6 +82,18 @@ message LoginPasswordRequest {
 message LoginPasswordResponse {
     bool success = 1;
     string uid = 2;
+}
+
+// Message storage for replication
+message MessageData {
+    string mid = 1;
+    string sender_uid = 2;
+    string receiver_uid = 3;
+    string sender_username = 4;
+    string receiver_username = 5;
+    string text = 6;
+    string timestamp = 7;
+    bool receiver_read = 8;
 }
 
 // Account flow

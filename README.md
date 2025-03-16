@@ -41,3 +41,8 @@ host = 0.0.0.0
 port = 65433
 use_wire_protocol = True
 ```
+
+5. Proto file generation
+
+```bash
+python -m grpc_tools.protoc -I. --python_out=. --grpc chat.proto
