@@ -12,7 +12,7 @@ from controller.login import check_username_exists, check_username_password, cre
 from controller.accounts import list_accounts, delete_account
 from controller.messages import get_message_by_mid, get_received_messages_id, get_sent_messages_id, send_message, mark_message_read, delete_messages
 from model import User, Message
-from utils import dict_to_object_recursive, object_to_dict_recursive, parse_request, send_response
+from utils import dict_to_object_recursive, object_to_dict_recursive
 
 # Load config
 config = configparser.ConfigParser()

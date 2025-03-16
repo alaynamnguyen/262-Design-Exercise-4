@@ -5,7 +5,7 @@ import uuid
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from controller.login import (
     check_username_exists, check_username_password, create_account,
-    mark_client_connected, handle_login_request
+    mark_client_connected
 )
 from model.user import User
 from unittest.mock import Mock
@@ -91,30 +91,6 @@ def test_mark_client_connected(connected_clients, mock_socket):
 
     assert uid in connected_clients
     assert connected_clients[uid] == [addr, mock_socket]
-
-# ---------------- TESTS FOR LOGIN HANDLING ---------------- #
-
-@pytest.mark.parametrize("task,username,password,expected_login_success", [
-    ("login-password", "Alice", "secure123", True),  # Correct password
-    ("login-password", "Alice", "wrongpass", False),  # Incorrect password
-    ("login-password", "NonExistent", "newpass", True),  # Account created
-])
-def test_handle_login_request(mock_data, mock_socket, sample_users, connected_clients, task, username, password, expected_login_success):
-    """
-    Test handle_login_request() for both existing and new users.
-    """
-    message = {
-        "task": task,
-        "username": username,
-        "password": password
-    }
-
-    handle_login_request(mock_data, mock_socket, message, sample_users, connected_clients, USE_WIRE_PROTOCOL=False)
-
-    assert mock_data.outb != b""  # Some response should be sent
-
-    response_str = mock_data.outb.decode("utf-8")
-    assert f'"login_success": {str(expected_login_success).lower()}' in response_str  # Verify login success
 
 # ---------------- EDGE CASES ---------------- #
 

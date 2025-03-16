@@ -4,38 +4,10 @@ import sys
 import uuid
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils import (
-    json_to_wire_protocol, wire_protocol_to_json,
     object_to_dict_recursive, dict_to_object_recursive
 )
 from model.user import User
 from model.message import Message
-
-# ------------------ JSON <-> WIRE PROTOCOL TESTS ------------------ #
-
-@pytest.mark.parametrize("json_message, expected_wire", [
-    ({"task": "login-username", "username": "Alice"}, "aAlice"),
-    ({"task": "login-username-reply", "user_exists": True, "username": "Alice"}, "bTAlice"),
-    ({"task": "send-message", "sender": "user1", "receiver": "user2", "sender_username": "Alice",
-      "receiver_username": "Bob", "text": "Hello", "timestamp": "2023-01-01T12:00:00"},
-     "guser12023-01-01T12:00:0005user2Hello"),
-])
-def test_json_to_wire_protocol(json_message, expected_wire):
-    """
-    Test that JSON messages are correctly encoded into wire protocol.
-    """
-    wire_message = json_to_wire_protocol(json_message).decode("utf-8")
-    assert wire_message == expected_wire
-
-@pytest.mark.parametrize("wire_message, expected_json", [
-    ("aAlice", {"task": "login-username", "username": "Alice"}),
-    ("bTAlice", {"task": "login-username-reply", "user_exists": True, "username": "Alice"}),
-])
-def test_wire_protocol_to_json(wire_message, expected_json):
-    """
-    Test that wire protocol messages are correctly decoded into JSON.
-    """
-    json_message = wire_protocol_to_json(wire_message)
-    assert json_message == expected_json
 
 # ------------------ OBJECT <-> DICTIONARY TESTS ------------------ #
 
