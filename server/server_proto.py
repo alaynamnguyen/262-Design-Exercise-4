@@ -25,14 +25,14 @@ def load_users_and_messages():
     """Loads user data from the JSON file."""
     # User dict
     users_dict = dict()
-    with open("server/test/user.json", "r") as f:
+    with open("server/data/user.json", "r") as f:
             users = json.load(f)
     for k, v in users.items():
         user = dict_to_object_recursive(v, User)
         users_dict[user.uid] = user
 
     messages_dict = dict()
-    with open("server/test/message.json", "r") as f:
+    with open("server/data/message.json", "r") as f:
         messages = json.load(f)
     for k, v in messages.items():
         message = dict_to_object_recursive(v, Message)
@@ -42,7 +42,7 @@ def load_users_and_messages():
 
 def save_users(users_dict):
     """Saves user data to the JSON file."""
-    with open("server/test/user.json", "w") as f:
+    with open("server/data/user.json", "w") as f:
         json.dump(users_dict, f, default=object_to_dict_recursive, indent=4)
 
 def hash_password(password):
