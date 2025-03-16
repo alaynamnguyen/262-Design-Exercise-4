@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package chat;
+
+service ChatService {
+    // Login flow
+    rpc LoginUsername(LoginUsernameRequest) returns (LoginUsernameResponse);  // login-username -> login-username-reply
+    rpc LoginPassword(LoginPasswordRequest) returns (LoginPasswordResponse); // login-password -> login-password-reply
+
+    // Account flow
+    rpc DeleteAccount(DeleteAccountRequest) returns (DeleteAccountResponse);
+    rpc ListAccounts(ListAccountsRequest) returns (ListAccountsResponse);
+
+    // Messaging flow
+    rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
+    rpc GetSentMessages(GetMessagesRequest) returns (GetMessagesResponse);
+    rpc GetReceivedMessages(GetMessagesRequest) returns (GetMessagesResponse);
+    rpc GetMessageByMid(GetMessageRequest) returns (GetMessageResponse);
+    rpc MarkMessageRead(MarkMessageReadRequest) returns (MarkMessageReadResponse);
+    rpc DeleteMessages(DeleteMessagesRequest) returns (DeleteMessagesResponse);
+}
+
+// Login flow
+message LoginUsernameRequest {
+    string username = 1;
+}
+
+message LoginUsernameResponse {
+    bool user_exists = 1;
+    string username = 2;
+}
+
+message LoginPasswordRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message LoginPasswordResponse {
+    bool success = 1;
+    string uid = 2;
+}
+
+// Account flow
+message DeleteAccountRequest {
+    string uid = 1;
+}
+
+message DeleteAccountResponse {
+    bool success = 1;
+}
+
+message ListAccountsRequest {
+    string wildcard = 1;
+}
+
+message ListAccountsResponse {
+    repeated string accounts = 1;
+}
+
+// Messaging flow
+message SendMessageRequest {
+    string sender = 1;
+    string receiver_username = 2;
+    string text = 3;
+    string timestamp = 4;
+}
+
+message SendMessageResponse {
+    bool success = 1;
+}
+
+message GetMessagesRequest {
+    string uid = 1;
+}
+
+message GetMessagesResponse {
+    repeated string mids = 1;
+}
+
+message GetMessageRequest {
+    string mid = 1;
+}
+
+message GetMessageResponse {
+    string sender_uid = 1;
+    string receiver_uid = 2;
+    string sender_username = 3;
+    string receiver_username = 4;
+    string text = 5;
+    string timestamp = 6;
+    bool receiver_read = 7;
+}
+
+message MarkMessageReadRequest {
+    string mid = 1;
+}
+
+message MarkMessageReadResponse {
+    bool success = 1;
+}
+
+message DeleteMessagesRequest {
+    string uid = 1;
+    repeated string mids = 2;
+}
+
+message DeleteMessagesResponse {
+    bool success = 1;
+}
