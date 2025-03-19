@@ -69,7 +69,7 @@ def get_message_by_mid(mid, messages_dict):
         return object_to_dict_recursive(messages_dict[mid]) # Convert to dict
     else:
         print(f"Message {mid} does not exist.")
-        return None  # TODO Handle missing message case
+        return None
     
 def get_sent_messages_id(uid, users_dict):
     """
