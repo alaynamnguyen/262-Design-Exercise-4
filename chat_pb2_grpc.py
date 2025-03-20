@@ -89,10 +89,10 @@ class ChatServiceStub(object):
                 request_serializer=chat__pb2.RegisterReplicaRequest.SerializeToString,
                 response_deserializer=chat__pb2.RegisterReplicaResponse.FromString,
                 _registered_method=True)
-        self.SyncMessagesWithReplica = channel.unary_unary(
-                '/chat.ChatService/SyncMessagesWithReplica',
-                request_serializer=chat__pb2.ReplicaSyncRequest.SerializeToString,
-                response_deserializer=chat__pb2.ReplicaSyncResponse.FromString,
+        self.SyncMessagesFromLeader = channel.unary_unary(
+                '/chat.ChatService/SyncMessagesFromLeader',
+                request_serializer=chat__pb2.MessageSyncRequest.SerializeToString,
+                response_deserializer=chat__pb2.MessageSyncResponse.FromString,
                 _registered_method=True)
         self.Heartbeat = channel.unary_unary(
                 '/chat.ChatService/Heartbeat',
@@ -181,8 +181,8 @@ class ChatServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def SyncMessagesWithReplica(self, request, context):
-        """TODO: leader push notification to replica or replica periodically pull for updates?
+    def SyncMessagesFromLeader(self, request, context):
+        """rpc SyncMessagesWithReplica(ReplicaSyncRequest) returns (ReplicaSyncResponse);  // TODO: leader push notification to replica or replica periodically pull for updates?
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -258,10 +258,10 @@ def add_ChatServiceServicer_to_server(servicer, server):
                     request_deserializer=chat__pb2.RegisterReplicaRequest.FromString,
                     response_serializer=chat__pb2.RegisterReplicaResponse.SerializeToString,
             ),
-            'SyncMessagesWithReplica': grpc.unary_unary_rpc_method_handler(
-                    servicer.SyncMessagesWithReplica,
-                    request_deserializer=chat__pb2.ReplicaSyncRequest.FromString,
-                    response_serializer=chat__pb2.ReplicaSyncResponse.SerializeToString,
+            'SyncMessagesFromLeader': grpc.unary_unary_rpc_method_handler(
+                    servicer.SyncMessagesFromLeader,
+                    request_deserializer=chat__pb2.MessageSyncRequest.FromString,
+                    response_serializer=chat__pb2.MessageSyncResponse.SerializeToString,
             ),
             'Heartbeat': grpc.unary_unary_rpc_method_handler(
                     servicer.Heartbeat,
@@ -582,7 +582,7 @@ class ChatService(object):
             _registered_method=True)
 
     @staticmethod
-    def SyncMessagesWithReplica(request,
+    def SyncMessagesFromLeader(request,
             target,
             options=(),
             channel_credentials=None,
@@ -595,9 +595,9 @@ class ChatService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/chat.ChatService/SyncMessagesWithReplica',
-            chat__pb2.ReplicaSyncRequest.SerializeToString,
-            chat__pb2.ReplicaSyncResponse.FromString,
+            '/chat.ChatService/SyncMessagesFromLeader',
+            chat__pb2.MessageSyncRequest.SerializeToString,
+            chat__pb2.MessageSyncResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -21,7 +21,8 @@ service ChatService {
 
     // Replicas
     rpc RegisterReplica(RegisterReplicaRequest) returns (RegisterReplicaResponse);
-    rpc SyncMessagesWithReplica(ReplicaSyncRequest) returns (ReplicaSyncResponse);  // TODO: leader push notification to replica or replica periodically pull for updates?
+    // rpc SyncMessagesWithReplica(ReplicaSyncRequest) returns (ReplicaSyncResponse);  // TODO: leader push notification to replica or replica periodically pull for updates?
+    rpc SyncMessagesFromLeader(MessageSyncRequest) returns (MessageSyncResponse);
     rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
     rpc ElectLeader(ElectLeaderRequest) returns (ElectLeaderResponse);
 }
@@ -38,11 +39,19 @@ message RegisterReplicaResponse {
     repeated string replica_list = 2;  // ["ip:port", ...]
 }
 
-message ReplicaSyncRequest {
+// message ReplicaSyncRequest {
+//     repeated MessageData messages = 1;
+// }
+
+// message ReplicaSyncResponse {
+//     bool success = 1;
+// }
+
+message MessageSyncRequest {
     repeated MessageData messages = 1;
 }
 
-message ReplicaSyncResponse {
+message MessageSyncResponse {
     bool success = 1;
 }
 
@@ -86,12 +95,12 @@ message LoginPasswordResponse {
 
 // Message storage for replication
 message MessageData {
-    string mid = 1;
-    string sender_uid = 2;
-    string receiver_uid = 3;
-    string sender_username = 4;
-    string receiver_username = 5;
-    string text = 6;
+    string sender = 1;
+    string receiver = 2;
+    string sender_username = 3;
+    string receiver_username = 4;
+    string text = 5;
+    string mid = 6;
     string timestamp = 7;
     bool receiver_read = 8;
 }
