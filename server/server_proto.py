@@ -23,7 +23,6 @@ config = configparser.ConfigParser()
 config.read("config.ini")
 
 HOST = config["network"]["host"]
-PORT = int(config["network"]["port"])
 
 def load_users_and_messages(ip, port):
     """Loads user data from the JSON file."""
@@ -132,7 +131,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         """Setup server when server starts"""
         print("Calling on_server_start")
         if self.is_leader:  # Leader server initialization
-            self.replica_list = [f"{HOST}:{PORT}"] # Leader is included in the replica_list
+            self.replica_list = [args.leader_address] # Leader is included in the replica_list
         else:  # Replica server initialization
             with grpc.insecure_channel(f"{self.leader_ip}:{self.leader_port}") as channel:
                 stub = chat_pb2_grpc.ChatServiceStub(channel)
@@ -327,35 +326,36 @@ def get_local_ip():
 def serve(args):
     """Starts the gRPC server with only login flow."""
     # Leader and server addresses
-    local_ip = socket.gethostbyname(get_local_ip()) if not args.is_leader else HOST
-    local_port = args.port if not args.is_leader else PORT
+    leader_ip, leader_port = args.leader_address.split(":")
+
+    local_ip = socket.gethostbyname(get_local_ip()) if not args.is_leader else leader_ip
+    local_port = args.port if not args.is_leader else leader_port
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    chat_service = ChatService(args.is_leader, local_ip, local_port, args.leader_ip, PORT, args.hi)
+    chat_service = ChatService(args.is_leader, local_ip, local_port, leader_ip, leader_port, args.hi)
     chat_pb2_grpc.add_ChatServiceServicer_to_server(chat_service, server)
 
     if args.is_leader:
-        server.add_insecure_port(f"{HOST}:{PORT}")  # Leader uses HOST and PORT from config.ini
-        print("Mode: leader, leader IP:", f"{HOST}:{PORT}")
+        server.add_insecure_port(f"{HOST}:{leader_port}")  # Leader uses HOST and PORT from config.ini
+        print("Mode: leader, leader IP:", f"{leader_ip}:{leader_port}")
     else:
         server.add_insecure_port(f"{local_ip}:{local_port}")  # Replica uses local ip and port from arguments
-        server.add_insecure_port(f"{HOST}:{local_port}")
-        print("Mode: replica, replica IP", f"{local_ip}:{local_port}", "leader IP", f"{HOST}:{PORT}")
+        server.add_insecure_port(f"{HOST}:{local_port}") # Listen externally in case this one becomes leader later on
+        print("Mode: replica, replica IP", f"{local_ip}:{local_port}", "leader IP", f"{leader_ip}:{leader_port}")
 
     server.start()
     chat_service.on_server_start()
 
     
-    print(f"Server Proto started on port {PORT}...")
+    print(f"Server Proto started on port {leader_port}...")
     server.wait_for_termination()
-    # TODO: Implement leader election
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start the Chat Client with optional parameters.")
     parser.add_argument("--is-leader", action="store_true", help="Set this flag to run as a leader")
     parser.add_argument("--port", type=int, default=60001, help="Specify the port")
     parser.add_argument("--hi", type=int, default=1)
-    parser.add_argument("--leader-ip", type=str, default="10.250.248.221", help="Specify the leader ip address")
+    parser.add_argument("--leader-address", type=str, default="10.250.248.221:60000", help="Specify the leader address")
 
     args = parser.parse_args()
     serve(args)
