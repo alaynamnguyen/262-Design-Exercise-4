@@ -36,12 +36,12 @@ class User:
         active : bool, optional
             Indicates whether the user account is active. Defaults to True.
         """
-        self.uid = uid if uid else str(uuid.uuid4())
-        self.username = username
-        self.password = password
-        self.received_messages = received_messages if received_messages is not None else []
-        self.sent_messages = sent_messages if sent_messages is not None else []
-        self.active = active
+        self.uid = str(uid) if uid else str(uuid.uuid4())
+        self.username = str(username)
+        self.password = str(password)
+        self.received_messages = list(received_messages) if received_messages is not None else []
+        self.sent_messages = list(sent_messages) if sent_messages is not None else []
+        self.active = bool(active)
 
     def __repr__(self):
         """

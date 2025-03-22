@@ -48,14 +48,14 @@ class Message:
         receiver_read : bool, optional
             Whether the receiver has read the message. Defaults to False.
         """
-        self.sender = sender
-        self.receiver = receiver
-        self.sender_username = sender_username
-        self.receiver_username = receiver_username
-        self.text = text
-        self.mid = mid if mid else str(uuid.uuid4())
+        self.sender = str(sender)
+        self.receiver = str(receiver)
+        self.sender_username = str(sender_username)
+        self.receiver_username = str(receiver_username)
+        self.text = str(text)
+        self.mid = str(mid) if mid else str(uuid.uuid4())
         self.timestamp = str(timestamp if timestamp else datetime.now())  # Convert to string for JSON serialization
-        self.receiver_read = receiver_read
+        self.receiver_read = bool(receiver_read)
 
     def mark_as_read(self):
         """

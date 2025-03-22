@@ -1,0 +1,332 @@
+{
+    "264339e7-bb23-4942-a8ce-8ded1d1d7879": {
+        "sender": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "receiver": "1316b684-74de-4f8f-8f91-45c391519a25",
+        "sender_username": "jim",
+        "receiver_username": "toby",
+        "text": "hey",
+        "mid": "264339e7-bb23-4942-a8ce-8ded1d1d7879",
+        "timestamp": "2025-02-10 21:10:22.723258",
+        "receiver_read": false
+    },
+    "6bac3754-b1ba-4381-9718-afde00234ff3": {
+        "sender": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "jim",
+        "receiver_username": "jim",
+        "text": "dsfs",
+        "mid": "6bac3754-b1ba-4381-9718-afde00234ff3",
+        "timestamp": "2025-02-10 21:10:30.362450",
+        "receiver_read": true
+    },
+    "ae3c13a9-7678-4229-9761-de29f8f85a11": {
+        "sender": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "jim",
+        "receiver_username": "jim",
+        "text": "sd",
+        "mid": "ae3c13a9-7678-4229-9761-de29f8f85a11",
+        "timestamp": "2025-02-10 21:10:37.246728",
+        "receiver_read": true
+    },
+    "ea2eb65e-e169-472f-8bb7-67c32501192d": {
+        "sender": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "jim",
+        "receiver_username": "jim",
+        "text": "2222",
+        "mid": "ea2eb65e-e169-472f-8bb7-67c32501192d",
+        "timestamp": "2025-02-10 21:10:43.657426",
+        "receiver_read": true
+    },
+    "a51ce57a-31f6-491e-9c09-850ce4540fee": {
+        "sender": "094bd1ca-39e4-4fe5-877b-e9d06191e516",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "alex",
+        "receiver_username": "jim",
+        "text": "PI PI PI",
+        "mid": "a51ce57a-31f6-491e-9c09-850ce4540fee",
+        "timestamp": "2025-02-10 23:41:27.409700",
+        "receiver_read": true
+    },
+    "1c565df1-6d0f-4b34-87c6-0bf592be048e": {
+        "sender": "094bd1ca-39e4-4fe5-877b-e9d06191e516",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "alex",
+        "receiver_username": "jim",
+        "text": "well hey",
+        "mid": "1c565df1-6d0f-4b34-87c6-0bf592be048e",
+        "timestamp": "2025-02-10 23:58:49.736247",
+        "receiver_read": false
+    },
+    "6dc61d15-a0ae-4db4-8219-e163b468ad75": {
+        "sender": "094bd1ca-39e4-4fe5-877b-e9d06191e516",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "alex",
+        "receiver_username": "jim",
+        "text": "s;dflsd",
+        "mid": "6dc61d15-a0ae-4db4-8219-e163b468ad75",
+        "timestamp": "2025-02-10 23:59:02.411424",
+        "receiver_read": true
+    },
+    "d8fd2fec-1014-431e-ab7a-8174b1a409b3": {
+        "sender": "094bd1ca-39e4-4fe5-877b-e9d06191e516",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "alex",
+        "receiver_username": "jim",
+        "text": "yellow",
+        "mid": "d8fd2fec-1014-431e-ab7a-8174b1a409b3",
+        "timestamp": "2025-02-10 23:59:19.338558",
+        "receiver_read": false
+    },
+    "9c429fe4-3f04-4499-9e9e-195fa2684347": {
+        "sender": "17b7fb45-b5b3-41d7-8856-b99141b03c83",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "gill",
+        "receiver_username": "jim",
+        "text": "stat 111",
+        "mid": "9c429fe4-3f04-4499-9e9e-195fa2684347",
+        "timestamp": "2025-02-11 00:00:59.422843",
+        "receiver_read": true
+    },
+    "1f9a11db-cd04-4092-8666-9b6f20b4ef63": {
+        "sender": "17b7fb45-b5b3-41d7-8856-b99141b03c83",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "gill",
+        "receiver_username": "jim",
+        "text": "stat 110",
+        "mid": "1f9a11db-cd04-4092-8666-9b6f20b4ef63",
+        "timestamp": "2025-02-11 00:01:07.947569",
+        "receiver_read": true
+    },
+    "8fc20520-f65e-45f8-9bb8-ea17e8e4fa10": {
+        "sender": "094bd1ca-39e4-4fe5-877b-e9d06191e516",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "alex",
+        "receiver_username": "jim",
+        "text": "new one",
+        "mid": "8fc20520-f65e-45f8-9bb8-ea17e8e4fa10",
+        "timestamp": "2025-02-11 00:23:49.666165",
+        "receiver_read": false
+    },
+    "224d3f1d-bc9b-4a88-8c92-efdddc04d5b4": {
+        "sender": "4ab7c146-e3a6-4d8a-9f52-54ecea0ff00b",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "amy",
+        "receiver_username": "jim",
+        "text": "legally blonde",
+        "mid": "224d3f1d-bc9b-4a88-8c92-efdddc04d5b4",
+        "timestamp": "2025-02-11 00:35:39.496432",
+        "receiver_read": true
+    },
+    "806a4aeb-e682-48eb-9674-6fde604bb0c6": {
+        "sender": "4ab7c146-e3a6-4d8a-9f52-54ecea0ff00b",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "amy",
+        "receiver_username": "jim",
+        "text": "hehe",
+        "mid": "806a4aeb-e682-48eb-9674-6fde604bb0c6",
+        "timestamp": "2025-02-11 00:36:02.738523",
+        "receiver_read": true
+    },
+    "4f60a44c-96c0-406d-81d4-900d3926f336": {
+        "sender": "4ab7c146-e3a6-4d8a-9f52-54ecea0ff00b",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "amy",
+        "receiver_username": "jim",
+        "text": "sdfasdfasdfasdfsa",
+        "mid": "4f60a44c-96c0-406d-81d4-900d3926f336",
+        "timestamp": "2025-02-11 00:36:09.676060",
+        "receiver_read": true
+    },
+    "47acc852-d89f-4abc-bfd1-5c38997a4dfe": {
+        "sender": "17b7fb45-b5b3-41d7-8856-b99141b03c83",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "gill",
+        "receiver_username": "jim",
+        "text": "now",
+        "mid": "47acc852-d89f-4abc-bfd1-5c38997a4dfe",
+        "timestamp": "2025-02-11 15:24:50.364607",
+        "receiver_read": true
+    },
+    "eb20346d-98c3-4591-b87f-6c6f98a50c8d": {
+        "sender": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "receiver": "40b18422-da24-4f33-9031-2fcc609c86a1",
+        "sender_username": "jim",
+        "receiver_username": "joe",
+        "text": "CLT",
+        "mid": "eb20346d-98c3-4591-b87f-6c6f98a50c8d",
+        "timestamp": "2025-02-11 15:52:28.884784",
+        "receiver_read": false
+    },
+    "c01fc72a-14cd-4910-95a0-6fb0ff26e6c0": {
+        "sender": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "jim",
+        "receiver_username": "jim",
+        "text": "jim",
+        "mid": "c01fc72a-14cd-4910-95a0-6fb0ff26e6c0",
+        "timestamp": "2025-02-11 19:00:55.116047",
+        "receiver_read": true
+    },
+    "66511f26-d4e8-40bb-bd97-f9d0da232181": {
+        "sender": "17b7fb45-b5b3-41d7-8856-b99141b03c83",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "gill",
+        "receiver_username": "jim",
+        "text": "hi jim from gill",
+        "mid": "66511f26-d4e8-40bb-bd97-f9d0da232181",
+        "timestamp": "2025-02-12 00:42:54.480503",
+        "receiver_read": true
+    },
+    "4b635f0a-2c97-4a87-b35b-c644546461d5": {
+        "sender": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "receiver": "17b7fb45-b5b3-41d7-8856-b99141b03c83",
+        "sender_username": "jim",
+        "receiver_username": "gill",
+        "text": "hi gill1",
+        "mid": "4b635f0a-2c97-4a87-b35b-c644546461d5",
+        "timestamp": "2025-02-12 00:43:42.040012",
+        "receiver_read": true
+    },
+    "3349cf5e-dcc3-4185-a79b-1875b4b1cfee": {
+        "sender": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "receiver": "17b7fb45-b5b3-41d7-8856-b99141b03c83",
+        "sender_username": "jim",
+        "receiver_username": "gill",
+        "text": "hiiiiii",
+        "mid": "3349cf5e-dcc3-4185-a79b-1875b4b1cfee",
+        "timestamp": "2025-02-12 00:43:55.417199",
+        "receiver_read": false
+    },
+    "46045e85-9aad-44bd-a72a-6064444df034": {
+        "sender": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "jim",
+        "receiver_username": "jim",
+        "text": "weljsdf",
+        "mid": "46045e85-9aad-44bd-a72a-6064444df034",
+        "timestamp": "2025-02-12 00:56:18.650475",
+        "receiver_read": true
+    },
+    "2e2268a1-7c67-4cd2-8f12-77914db544b7": {
+        "sender": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "jim",
+        "receiver_username": "jim",
+        "text": "hey",
+        "mid": "2e2268a1-7c67-4cd2-8f12-77914db544b7",
+        "timestamp": "2025-02-12 01:16:08.458837",
+        "receiver_read": true
+    },
+    "6a3034db-c605-4e1d-85f4-59237cb798e4": {
+        "sender": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "jim",
+        "receiver_username": "jim",
+        "text": "now",
+        "mid": "6a3034db-c605-4e1d-85f4-59237cb798e4",
+        "timestamp": "2025-02-12 01:20:20.246514",
+        "receiver_read": true
+    },
+    "e724e7b5-74ef-4119-bc79-fc5ab73a24b8": {
+        "sender": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "jim",
+        "receiver_username": "jim",
+        "text": "sdflksdf",
+        "mid": "e724e7b5-74ef-4119-bc79-fc5ab73a24b8",
+        "timestamp": "2025-02-12 01:24:10.114344",
+        "receiver_read": true
+    },
+    "a2117e44-1804-4e47-8471-5a8774178f00": {
+        "sender": "e6d0fe62-c348-4aff-9b31-d68fd1fcbd98",
+        "receiver": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
+        "sender_username": "alayna",
+        "receiver_username": "yinan",
+        "text": "well hi there",
+        "mid": "a2117e44-1804-4e47-8471-5a8774178f00",
+        "timestamp": "2025-02-12 01:42:09.174209",
+        "receiver_read": false
+    },
+    "47c42dc5-63f4-48cd-b2de-2ea3258ef272": {
+        "sender": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
+        "receiver": "e6d0fe62-c348-4aff-9b31-d68fd1fcbd98",
+        "sender_username": "yinan",
+        "receiver_username": "alayna",
+        "text": "HAHAHAHA\nhappy birthday",
+        "mid": "47c42dc5-63f4-48cd-b2de-2ea3258ef272",
+        "timestamp": "2025-02-12 01:42:22.850200",
+        "receiver_read": false
+    },
+    "66f50aa8-1eb8-4525-9a83-35882bd7118d": {
+        "sender": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
+        "receiver": "e6d0fe62-c348-4aff-9b31-d68fd1fcbd98",
+        "sender_username": "yinan",
+        "receiver_username": "alayna",
+        "text": "happy birthday to you\nyou are born in the zoo\nyou look like a monkey\nand you smell like one too!",
+        "mid": "66f50aa8-1eb8-4525-9a83-35882bd7118d",
+        "timestamp": "2025-02-12 01:43:19.231416",
+        "receiver_read": false
+    },
+    "e271ef58-e0bd-48de-b2d1-a02823779fdb": {
+        "sender": "e6d0fe62-c348-4aff-9b31-d68fd1fcbd98",
+        "receiver": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
+        "sender_username": "alayna",
+        "receiver_username": "yinan",
+        "text": "beta\ngamma\nbinomial\nnormal\nuniform\nexpo\nbernoulli\npoisson\nchi squared\nlog normal\nmultinomial\nbivariate\nhypergeometric\nnegative binomial\nunNAMED :D\noh yes geometric",
+        "mid": "e271ef58-e0bd-48de-b2d1-a02823779fdb",
+        "timestamp": "2025-02-12 01:44:50.187377",
+        "receiver_read": false
+    },
+    "8e617a51-f7af-4de7-b2a8-330218a9b52c": {
+        "sender": "e6d0fe62-c348-4aff-9b31-d68fd1fcbd98",
+        "receiver": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
+        "sender_username": "alayna",
+        "receiver_username": "yinan",
+        "text": "chebyshev\ninterpolation\nquadrature\nnewton's method\nsecant method\node\nlegendre polynomial\nbasis\nclenshaw curtis\ngauss hermite\ninterior points\nsimplex method\nrunge kutta",
+        "mid": "8e617a51-f7af-4de7-b2a8-330218a9b52c",
+        "timestamp": "2025-02-12 01:52:34.662388",
+        "receiver_read": false
+    },
+    "e9c63dd2-f023-41e8-8ca5-56b978967687": {
+        "sender": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
+        "receiver": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
+        "sender_username": "yinan",
+        "receiver_username": "yinan",
+        "text": "hello from myself",
+        "mid": "e9c63dd2-f023-41e8-8ca5-56b978967687",
+        "timestamp": "2025-02-12 12:16:47.495477",
+        "receiver_read": false
+    },
+    "e9dd9528-dd1e-4c9f-b651-d21f4d08a889": {
+        "sender": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
+        "receiver": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
+        "sender_username": "yinan",
+        "receiver_username": "yinan",
+        "text": "yinannnnnn",
+        "mid": "e9dd9528-dd1e-4c9f-b651-d21f4d08a889",
+        "timestamp": "2025-02-12 12:17:39.624926",
+        "receiver_read": false
+    },
+    "ef0ef61d-3506-4056-95e4-bfffd83126bf": {
+        "sender": "1ca095ce-91a3-4bdb-bf97-243f4f9c881e",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "ann",
+        "receiver_username": "jim",
+        "text": "ok",
+        "mid": "ef0ef61d-3506-4056-95e4-bfffd83126bf",
+        "timestamp": "2025-02-12 13:05:27.010153",
+        "receiver_read": true
+    },
+    "fb5ff833-bb09-49fd-9028-87b613eb0ecb": {
+        "sender": "1ca095ce-91a3-4bdb-bf97-243f4f9c881e",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "ann",
+        "receiver_username": "jim",
+        "text": "teehee",
+        "mid": "fb5ff833-bb09-49fd-9028-87b613eb0ecb",
+        "timestamp": "2025-02-12 13:07:47.352550",
+        "receiver_read": false
+    }
+}

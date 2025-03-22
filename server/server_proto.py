@@ -16,6 +16,7 @@ from model import User, Message
 from utils import dict_to_object_recursive, object_to_dict_recursive, protobuf_list_to_object, object_to_protobuf_list
 import socket
 
+
 # Load config
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -23,8 +24,11 @@ config.read("config.ini")
 HOST = config["network"]["host"]
 PORT = int(config["network"]["port"])
 
+
 def load_users_and_messages(ip, port):
     """Loads user data from the JSON file."""
+
+    print("Calling load_users_and_messages")
     # User dict
     users_dict = dict()
     user_filepath = f"server/data/user_{ip}_{port}.json"
@@ -39,7 +43,7 @@ def load_users_and_messages(ip, port):
     # Message dict
     messages_dict = dict()
     message_filepath = f"server/data/message_{ip}_{port}.json"
-    print("paths exist?", os.path.exists(user_filepath), os.path.exists(message_filepath))
+    print(f"    User and message json files exist: ", os.path.exists(user_filepath), os.path.exists(message_filepath))
 
     if os.path.exists(message_filepath):
         with open(message_filepath, "r") as f:
@@ -50,17 +54,23 @@ def load_users_and_messages(ip, port):
     
     return users_dict, messages_dict
 
+
 def save_users_and_messages(ip, port, users_dict, messages_dict):
     """Saves user data to the JSON file."""
+    print("Calling save_users_and_messages")
     with open(f"server/data/user_{ip}_{port}.json", "w") as f:
         json.dump(users_dict, f, default=object_to_dict_recursive, indent=4)
+    print(f"    Finished writing users_dict")
 
     with open(f"server/data/message_{ip}_{port}.json", "w") as f:
         json.dump(messages_dict, f, default=object_to_dict_recursive, indent=4)
+    print(f"    Finished writing messages_dict")
+
 
 def hash_password(password):
     """Hashes a password using SHA-256."""
     return hashlib.sha256(password.encode()).hexdigest()
+
 
 class ChatService(chat_pb2_grpc.ChatServiceServicer):
     
@@ -71,10 +81,11 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         self.local_port = local_port
         self.leader_ip = leader_ip
         self.leader_port = leader_port
-        self.users_dict, self.messages_dict = load_users_and_messages(self.local_ip, self.local_port) 
+        self.users_dict, self.messages_dict = load_users_and_messages(self.local_ip, self.local_port)  # Load users and messages from process specific persistent storage
 
     def on_server_start(self):
         """Setup server when server starts"""
+        print("Calling on_server_start")
         if self.is_leader:  # Leader server initialization
             self.replica_list = [f"{HOST}:{PORT}"] # Leader is included in the replica_list
         else:  # Replica server initialization
@@ -84,11 +95,9 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
                 response = stub.RegisterReplica(request)
                 # self.replica_list = response.replica_list
                 assert response.success
-        print(f"ChatService __init__: replica_list={self.replica_list}")
+        print(f"    ChatService __init__: replica_list={self.replica_list}")
 
-        # TODO: Replica load users and messages from process specific persistent storage
-        
-        # TODO later: Merge users and messages from leader and persistent storage (need to discuss)
+        # TODO: Later. Merge users and messages from leader and persistent storage (need to discuss)
 
     def LoginUsername(self, request, context):
         """Handles username lookup to check if a user exists."""
@@ -105,14 +114,14 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
 
         uid = check_username_exists(username, self.users_dict)
         if uid: # Existing account
-            print(f'Existing account: {uid}')
-            print("Password is correct:",check_username_password(uid, password, self.users_dict))
+            print(f'    Existing account: {uid}')
+            print(f"    Password is correct:",check_username_password(uid, password, self.users_dict))
             if check_username_password(uid, password, self.users_dict): # Password is correct
                 return chat_pb2.LoginPasswordResponse(success=True, uid=uid)
             else: # Password incorrect
                 return chat_pb2.LoginPasswordResponse(success=False, uid=uid)
         else: # Create account
-            print('Running create account')
+            print(f'    Creating account')
             uid = create_account(username, password, self.users_dict)
             save_users_and_messages(self.local, self.local_port, self.users_dict, self.messages_dict)
             return chat_pb2.LoginPasswordResponse(success=True, uid=uid)
@@ -157,8 +166,9 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         """Fetches the content of a message using its message ID."""
         print("Calling GetMessageByMid")
         message = get_message_by_mid(request.mid, self.messages_dict)
-        return chat_pb2.GetMessageResponse(sender_uid=message["sender"], receiver_uid=message["receiver"], sender_username=message["sender_username"],
-                                           receiver_username=message["receiver_username"], text=message["text"], timestamp=message["timestamp"], receiver_read=message["receiver_read"])
+        return chat_pb2.GetMessageResponse(sender_uid=message["sender"], receiver_uid=message["receiver"], 
+                                           sender_username=message["sender_username"], receiver_username=message["receiver_username"], 
+                                           text=message["text"], timestamp=message["timestamp"], receiver_read=message["receiver_read"])
 
     def MarkMessageRead(self, request, context):
         """Marks a specific message as read."""
@@ -176,10 +186,11 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         return chat_pb2.DeleteMessagesResponse(success=success)
     
     def push_messages_to_replica(self, replica_address, messages_dict):
+        print("Calling push_messages_to_replica")
         with grpc.insecure_channel(replica_address) as channel:
             stub = chat_pb2_grpc.ChatServiceStub(channel)
             messages = object_to_protobuf_list(messages_dict, chat_pb2.MessageData)
-            print(f"Preparing to send {len(messages)} messages to {replica_address}")
+            print(f"    Preparing to send {len(messages)} messages to {replica_address}")
             request = chat_pb2.MessageSyncRequest(messages=messages)
             response = stub.SyncMessagesFromLeader(request)
             assert response.success
@@ -189,7 +200,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         with grpc.insecure_channel(replica_address) as channel:
             stub = chat_pb2_grpc.ChatServiceStub(channel)
             users = object_to_protobuf_list(users_dict, chat_pb2.UserData)
-            print(f"Preparing to send {len(users)} users to {replica_address}")
+            print(f"    Preparing to send {len(users)} users to {replica_address}")
             request = chat_pb2.UserSyncRequest(users=users)
             response = stub.SyncUsersFromLeader(request)
             assert response.success
@@ -198,7 +209,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         print("Calling push_replica_list_to_replica")
         with grpc.insecure_channel(replica_address) as channel:
                 stub = chat_pb2_grpc.ChatServiceStub(channel)
-                print(f"Preparing to send {len(self.replica_list)} replicas to {replica_address}")
+                print(f"    Preparing to send {len(self.replica_list)} replicas to {replica_address}")
                 request = chat_pb2.ReplicaListSyncRequest(replica_list=self.replica_list)
                 response = stub.SyncReplicaListFromLeader(request)
                 assert response.success
@@ -210,20 +221,18 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         replica_address = f"{request.ip_address}:{request.port}"
         if replica_address not in self.replica_list:
             self.replica_list.append(replica_address)
-        print(f"RegisterReplica: self.replica_list={self.replica_list}")
+        print(f"    Added replica to replica_list: self.replica_list={self.replica_list}")
 
         # Push messages to replica
         self.push_messages_to_replica(replica_address, self.messages_dict)
         # Push users to replica
         self.push_users_to_replica(replica_address, self.users_dict)
-
-        print("DONE PUSHING USERS TO REPLICA")
+        print(f"    Pushed messages and users to replica")
 
         # Push replica _list to old replicas
         for replica_address in self.replica_list:
             if replica_address != f"{self.leader_ip}:{self.leader_port}":
                 # Only send updated replicas to non-leaders
-                print("LINE 222")
                 self.push_replica_list_to_replica(replica_address)
 
         return chat_pb2.RegisterReplicaResponse(success=True)
@@ -232,25 +241,24 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         """Leader calls replica's SyncMessagesFromLeader to push messages."""
         print("Calling SyncMessagesFromLeader")
         self.messages_dict = protobuf_list_to_object(request.messages, Message, "mid")
-        print(f"Received {len(request.messages)} messages from leader server")
-        # save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
+        print(f"    Received {len(request.messages)} messages from leader server")
+        save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
         # TODO: Directly saving leader's message_dict. Need to merge with persistant version   
         return chat_pb2.MessageSyncResponse(success=True)
 
     def SyncUsersFromLeader(self, request, context):
         """Leader calls replica's SyncUsersFromLeader to push users."""
         print("Calling SyncUsersFromLeader")
+        print(f"    Received {len(request.users)} users from leader server")
         self.users_dict = protobuf_list_to_object(request.users, User, "uid")
-        print(f"Received {len(request.users)} users from leader server")
-        print("BEORE WRITING USERS")
         save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
-        print("AFTER")
         # TODO: Directly saving leader's message_dict. Need to merge with persistant version   
         return chat_pb2.UserSyncResponse(success=True)
     
     def SyncReplicaListFromLeader(self, request, context):
+        print("Calling SyncReplicaListFromLeader")
         self.replica_list = request.replica_list
-        print(f"Updated replica_list to {self.replica_list}")
+        print(f"    Updated replica_list to {self.replica_list}")
         return chat_pb2.ReplicaListSyncResponse(success=True)
 
 def get_local_ip():
@@ -278,10 +286,10 @@ def serve(args):
 
     if args.is_leader:
         server.add_insecure_port(f"{HOST}:{PORT}")  # Leader uses HOST and PORT from config.ini
-        print("Leader mode, leader IP:", f"{HOST}:{PORT}")
+        print("Mode: leader, leader IP:", f"{HOST}:{PORT}")
     else:
         server.add_insecure_port(f"{local_ip}:{local_port}")  # Replica uses local ip and port from arguments
-        print("Replica mode, replica IP", f"{local_ip}:{local_port}", "leader IP", f"{HOST}:{PORT}")
+        print("Mode: replica, replica IP", f"{local_ip}:{local_port}", "leader IP", f"{HOST}:{PORT}")
 
     server.start()
     chat_service.on_server_start()
@@ -293,7 +301,7 @@ def serve(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start the Chat Client with optional parameters.")
     parser.add_argument("--is-leader", action="store_true", help="Set this flag to run as a leader")
-    parser.add_argument("--port", type=int, default=65433, help="Specify the port")
+    parser.add_argument("--port", type=int, default=60001, help="Specify the port")
 
     args = parser.parse_args()
     serve(args)
