@@ -21,7 +21,7 @@ class User:
         Indicates whether the user account is active. Defaults to True.
     """
 
-    def __init__(self, username, password, uid=None, active=True):
+    def __init__(self, username, password, uid=None, active=True, received_messages=None, sent_messages=None):
         """
         Initializes a User object with a username, password, and optional user ID.
 
@@ -39,8 +39,8 @@ class User:
         self.uid = uid if uid else str(uuid.uuid4())
         self.username = username
         self.password = password
-        self.received_messages = list()
-        self.sent_messages = list()
+        self.received_messages = received_messages if received_messages is not None else []
+        self.sent_messages = sent_messages if sent_messages is not None else []
         self.active = active
 
     def __repr__(self):

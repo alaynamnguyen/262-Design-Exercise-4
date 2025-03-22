@@ -94,6 +94,16 @@ class ChatServiceStub(object):
                 request_serializer=chat__pb2.MessageSyncRequest.SerializeToString,
                 response_deserializer=chat__pb2.MessageSyncResponse.FromString,
                 _registered_method=True)
+        self.SyncUsersFromLeader = channel.unary_unary(
+                '/chat.ChatService/SyncUsersFromLeader',
+                request_serializer=chat__pb2.UserSyncRequest.SerializeToString,
+                response_deserializer=chat__pb2.UserSyncResponse.FromString,
+                _registered_method=True)
+        self.SyncReplicaListFromLeader = channel.unary_unary(
+                '/chat.ChatService/SyncReplicaListFromLeader',
+                request_serializer=chat__pb2.ReplicaListSyncRequest.SerializeToString,
+                response_deserializer=chat__pb2.ReplicaListSyncResponse.FromString,
+                _registered_method=True)
         self.Heartbeat = channel.unary_unary(
                 '/chat.ChatService/Heartbeat',
                 request_serializer=chat__pb2.HeartbeatRequest.SerializeToString,
@@ -182,8 +192,19 @@ class ChatServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def SyncMessagesFromLeader(self, request, context):
-        """rpc SyncMessagesWithReplica(ReplicaSyncRequest) returns (ReplicaSyncResponse);  // TODO: leader push notification to replica or replica periodically pull for updates?
-        """
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SyncUsersFromLeader(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SyncReplicaListFromLeader(self, request, context):
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -262,6 +283,16 @@ def add_ChatServiceServicer_to_server(servicer, server):
                     servicer.SyncMessagesFromLeader,
                     request_deserializer=chat__pb2.MessageSyncRequest.FromString,
                     response_serializer=chat__pb2.MessageSyncResponse.SerializeToString,
+            ),
+            'SyncUsersFromLeader': grpc.unary_unary_rpc_method_handler(
+                    servicer.SyncUsersFromLeader,
+                    request_deserializer=chat__pb2.UserSyncRequest.FromString,
+                    response_serializer=chat__pb2.UserSyncResponse.SerializeToString,
+            ),
+            'SyncReplicaListFromLeader': grpc.unary_unary_rpc_method_handler(
+                    servicer.SyncReplicaListFromLeader,
+                    request_deserializer=chat__pb2.ReplicaListSyncRequest.FromString,
+                    response_serializer=chat__pb2.ReplicaListSyncResponse.SerializeToString,
             ),
             'Heartbeat': grpc.unary_unary_rpc_method_handler(
                     servicer.Heartbeat,
@@ -598,6 +629,60 @@ class ChatService(object):
             '/chat.ChatService/SyncMessagesFromLeader',
             chat__pb2.MessageSyncRequest.SerializeToString,
             chat__pb2.MessageSyncResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SyncUsersFromLeader(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/chat.ChatService/SyncUsersFromLeader',
+            chat__pb2.UserSyncRequest.SerializeToString,
+            chat__pb2.UserSyncResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SyncReplicaListFromLeader(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/chat.ChatService/SyncReplicaListFromLeader',
+            chat__pb2.ReplicaListSyncRequest.SerializeToString,
+            chat__pb2.ReplicaListSyncResponse.FromString,
             options,
             channel_credentials,
             insecure,

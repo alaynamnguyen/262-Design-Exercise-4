@@ -16,7 +16,6 @@ from model import User, Message
 from utils import dict_to_object_recursive, object_to_dict_recursive, protobuf_list_to_object, object_to_protobuf_list
 import socket
 
-
 # Load config
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -75,7 +74,8 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
                 stub = chat_pb2_grpc.ChatServiceStub(channel)
                 request = chat_pb2.RegisterReplicaRequest(ip_address=self.local_ip, port=self.local_port)
                 response = stub.RegisterReplica(request)
-                self.replica_list = response.replica_list
+                # self.replica_list = response.replica_list
+                assert response.success
         print(f"ChatService __init__: replica_list={self.replica_list}")
 
     def LoginUsername(self, request, context):
@@ -158,6 +158,33 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         success, _ = delete_messages(self.users_dict, self.messages_dict, request.mids, uid=request.uid)
         return chat_pb2.DeleteMessagesResponse(success=success)
     
+    def push_messages_to_replica(self, replica_address, messages_dict):
+        with grpc.insecure_channel(replica_address) as channel:
+            stub = chat_pb2_grpc.ChatServiceStub(channel)
+            messages = object_to_protobuf_list(messages_dict, chat_pb2.MessageData)
+            print(f"Preparing to send {len(messages)} messages to {replica_address}")
+            request = chat_pb2.MessageSyncRequest(messages=messages)
+            response = stub.SyncMessagesFromLeader(request)
+            assert response.success
+
+    def push_users_to_replica(self, replica_address, users_dict):
+        with grpc.insecure_channel(replica_address) as channel:
+            stub = chat_pb2_grpc.ChatServiceStub(channel)
+            users = object_to_protobuf_list(users_dict, chat_pb2.UserData)
+            print(f"Preparing to send {len(users)} users to {replica_address}")
+            request = chat_pb2.UserSyncRequest(users=users)
+            response = stub.SyncUsersFromLeader(request)
+            assert response.success
+
+    def push_replica_list_to_replica(self,replica_address):
+        with grpc.insecure_channel(replica_address) as channel:
+                stub = chat_pb2_grpc.ChatServiceStub(channel)
+                print(f"Preparing to send {len(self.replica_list)} replicas to {replica_address}")
+                request = chat_pb2.ReplicaListSyncRequest(replica_list=self.replica_list)
+                response = stub.SyncReplicaListFromLeader(request)
+                assert response.success
+
+
     def RegisterReplica(self, request, context):
         print("Calling RegisterReplica")
 
@@ -168,41 +195,56 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         print(f"RegisterReplica: self.replica_list={self.replica_list}")
 
         # Push messages to replica
-        with grpc.insecure_channel(replica_address) as channel:
-            stub = chat_pb2_grpc.ChatServiceStub(channel)
-            # messages = [
-            #     chat_pb2.MessageData(sender=m.sender, receiver=m.receiver,
-            #                          sender_username=m.sender_username, receiver_username=m.receiver_username,
-            #                          text=m.text, mid=m.mid, timestamp=m.timestamp, receiver_read=m.receiver_read)
-            #     for m in self.messages_dict.values()
-            # ]
+        self.push_messages_to_replica(replica_address, self.messages_dict)
+        # Push users to replica
+        self.push_users_to_replica(replica_address, self.users_dict)
 
-            # Note: If a MessageData object's receiver_read is False, it is not printed. 
-            #       Likely because it's MessageData's default value
-            messages = object_to_protobuf_list(self.messages_dict, chat_pb2.MessageData)
-            print(f"Preparing to send {len(messages)} messages to {replica_address}")
-            request = chat_pb2.MessageSyncRequest(messages=messages)
-            response = stub.SyncMessagesFromLeader(request)
-            assert response.success
+        # Push replica _list to old replicas
+        for replica_address in self.replica_list:
+            if replica_address != f"{self.leader_ip}:{self.leader_port}":
+                # Only send updated replicas to non-leaders
+                self.push_replica_list_to_replica(replica_address, self.replica_list)
 
-        # TODO: Push users to replica
-        # TODO: Notify all replicas of new replica
-
-        return chat_pb2.RegisterReplicaResponse(success=True, replica_list=self.replica_list)
+        return chat_pb2.RegisterReplicaResponse(success=True)
     
     def SyncMessagesFromLeader(self, request, context):
         """Leader calls replica's SyncMessagesFromLeader to push messages."""
         print("Calling SyncMessagesFromLeader")
         self.messages_dict = protobuf_list_to_object(request.messages, Message, "mid")
-        print(f"Received {len(request.messages)} from leader server") 
+        print(f"Received {len(request.messages)} messages from leader server") 
         # TODO: Directly saving leader's message_dict. Need to merge with persistant version   
         return chat_pb2.MessageSyncResponse(success=True)
 
+    def SyncUsersFromLeader(self, request, context):
+        """Leader calls replica's SyncUsersFromLeader to push users."""
+        print("Calling SyncUsersFromLeader")
+        self.users_dict = protobuf_list_to_object(request.users, User, "uid")
+        print(f"Received {len(request.users)} users from leader server") 
+        # TODO: Directly saving leader's message_dict. Need to merge with persistant version   
+        return chat_pb2.UserSyncResponse(success=True)
+    
+    def SyncReplicaListFromLeader(self, request, context):
+        self.replica_list = request.replica_list
+        print(f"Updated replica_list to {self.replica_list}")
+        return chat_pb2.ReplicaListSyncResponse(success=True)
+
+def get_local_ip():
+    """Safely get the LAN IP address of the current machine."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # Doesn't need to be reachable, just used to get the correct local IP
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
 
 def serve(args):
     """Starts the gRPC server with only login flow."""
     # Leader and server addresses
-    local_ip = socket.gethostbyname(socket.gethostname())
+    local_ip = socket.gethostbyname(get_local_ip())
     local_port = args.port
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
@@ -218,6 +260,7 @@ def serve(args):
 
     server.start()
     chat_service.on_server_start()
+    
     print(f"Server Proto started on port {PORT}...")
     server.wait_for_termination()
     # TODO: Implement leader election
