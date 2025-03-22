@@ -378,25 +378,5 @@
         "mid": "691dcf93-1437-40a3-94e3-67a43fa1adc6",
         "timestamp": "2025-03-22 15:52:38.301585",
         "receiver_read": true
-    },
-    "b1c175a5-7e66-4099-870d-bea7b9b820a6": {
-        "sender": "e6d0fe62-c348-4aff-9b31-d68fd1fcbd98",
-        "receiver": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
-        "sender_username": "alayna",
-        "receiver_username": "yinan",
-        "text": "are you hungry",
-        "mid": "b1c175a5-7e66-4099-870d-bea7b9b820a6",
-        "timestamp": "2025-03-22 15:55:06.858661",
-        "receiver_read": false
-    },
-    "38ef2027-e527-4a18-95d2-377bf5824621": {
-        "sender": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
-        "receiver": "e6d0fe62-c348-4aff-9b31-d68fd1fcbd98",
-        "sender_username": "yinan",
-        "receiver_username": "alayna",
-        "text": "Hi there 250!",
-        "mid": "38ef2027-e527-4a18-95d2-377bf5824621",
-        "timestamp": "2025-03-22 15:55:08.267473",
-        "receiver_read": false
     }
 }

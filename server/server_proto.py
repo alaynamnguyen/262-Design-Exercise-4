@@ -137,6 +137,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         # Remove old leader from replica_list
         print("    Old replica list:", self.replica_list)
         self.replica_list.remove(self.leader_address)
+        self.start_leader_heartbeat_loop()
         print(f"    Removed leader replica list {self.replica_list}")
 
         # Elect new leader (min ip/port combo from replica list)
@@ -150,8 +151,6 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         self.leader_ip, self.leader_port = new_leader_address.split(":")
         self.leader_address = f"{self.leader_ip}:{self.leader_port}"
         print("    New leader elected:", self.leader_address)
-
-        # TODO let all clients know what the address of the new leader is 
 
     def on_server_start(self):
         """Setup server when server starts"""
