@@ -25,7 +25,6 @@ config.read("config.ini")
 HOST = config["network"]["host"]
 PORT = int(config["network"]["port"])
 
-
 def load_users_and_messages(ip, port):
     """Loads user data from the JSON file."""
 
@@ -122,6 +121,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         
         if self.local_address == new_leader_address:
             self.is_leader = True
+            # Now update the config with your local address
 
         # Update everyone's params to new leade
         self.leader_ip, self.leader_port = new_leader_address.split(":")
@@ -331,7 +331,7 @@ def serve(args):
     local_port = args.port if not args.is_leader else PORT
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    chat_service = ChatService(args.is_leader, local_ip, local_port, HOST, PORT, args.hi)
+    chat_service = ChatService(args.is_leader, local_ip, local_port, args.leader_ip, PORT, args.hi)
     chat_pb2_grpc.add_ChatServiceServicer_to_server(chat_service, server)
 
     if args.is_leader:
@@ -355,6 +355,7 @@ if __name__ == "__main__":
     parser.add_argument("--is-leader", action="store_true", help="Set this flag to run as a leader")
     parser.add_argument("--port", type=int, default=60001, help="Specify the port")
     parser.add_argument("--hi", type=int, default=1)
+    parser.add_argument("--leader-ip", type=str, default="10.250.248.221", help="Specify the leader ip address")
 
     args = parser.parse_args()
     serve(args)
