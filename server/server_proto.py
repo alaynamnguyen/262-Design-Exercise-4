@@ -110,7 +110,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         def leader_heartbeat_loop():
             replica_down = False
             while True:
-                for replica in self.replica_listt:
+                for replica in self.replica_list:
                     try:
                         with grpc.insecure_channel(replica) as channel:
                             stub = chat_pb2_grpc.ChatServiceStub(channel)
