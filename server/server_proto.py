@@ -24,13 +24,13 @@ config.read("config.ini")
 
 HOST = config["network"]["host"]
 
-def load_users_and_messages(ip, port):
+def load_users_and_messages(ip, port, is_leader):
     """Loads user data from the JSON file."""
 
     print("Calling load_users_and_messages")
     # User dict
     users_dict = dict()
-    user_filepath = f"server/data/user_{ip}_{port}.json"
+    user_filepath = f"server/data/user_{ip}_{port}.json" if not is_leader else "server/data/user.json"
     
     if os.path.exists(user_filepath):
         with open(user_filepath, "r") as f:
@@ -41,7 +41,7 @@ def load_users_and_messages(ip, port):
     
     # Message dict
     messages_dict = dict()
-    message_filepath = f"server/data/message_{ip}_{port}.json"
+    message_filepath = f"server/data/message_{ip}_{port}.json" if not is_leader else "server/data/message.json"
     print(f"    User and message json files exist: ", os.path.exists(user_filepath), os.path.exists(message_filepath))
 
     if os.path.exists(message_filepath):
@@ -53,8 +53,7 @@ def load_users_and_messages(ip, port):
     
     return users_dict, messages_dict
 
-
-def save_users_and_messages(ip, port, users_dict, messages_dict):
+def save_users_and_messages(ip, port, users_dict, messages_dict, is_leader):
     """Saves user data to the JSON file."""
     print("Calling save_users_and_messages")
     with open(f"server/data/user_{ip}_{port}.json", "w") as f:
@@ -65,11 +64,19 @@ def save_users_and_messages(ip, port, users_dict, messages_dict):
         json.dump(messages_dict, f, default=object_to_dict_recursive, indent=4)
     print(f"    Finished writing messages_dict")
 
+    if is_leader: # Write to global persistent storage
+        with open(f"server/data/user.json", "w") as f:
+            json.dump(users_dict, f, default=object_to_dict_recursive, indent=4)
+        print(f"    Finished writing GLOBAL users_dict")
+
+        with open(f"server/data/message.json", "w") as f:
+            json.dump(messages_dict, f, default=object_to_dict_recursive, indent=4)
+        print(f"    Finished writing GLOBAL messages_dict")
+
 
 def hash_password(password):
     """Hashes a password using SHA-256."""
     return hashlib.sha256(password.encode()).hexdigest()
-
 
 class ChatService(chat_pb2_grpc.ChatServiceServicer):
     
@@ -82,7 +89,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         self.leader_ip = leader_ip
         self.leader_port = leader_port
         self.leader_address = f"{self.leader_ip}:{self.leader_port}"
-        self.users_dict, self.messages_dict = load_users_and_messages(self.local_ip, self.local_port)  # Load users and messages from process specific persistent storage
+        self.users_dict, self.messages_dict = load_users_and_messages(self.local_ip, self.local_port, self.is_leader)  # Load users and messages from process specific persistent storage
         self.heartbeat_interval = heartbeat_interval
 
     def start_heartbeat_loop(self):
@@ -167,8 +174,6 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
                 assert response.success
             self.start_heartbeat_loop() # begin sending heartbeat requests to leader
         print(f"    ChatService __init__: replica_list={self.replica_list}")
-
-        # TODO: Later. Merge users and messages from leader and persistent storage (need to discuss)
 
     def LoginUsername(self, request, context):
         """Handles username lookup to check if a user exists."""
@@ -320,7 +325,6 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         return chat_pb2.RegisterReplicaResponse(success=True)
     
     def Heartbeat(self, request, context):
-        # print(f"Calling Heartbeat request from {request.server_id}")
         return chat_pb2.HeartbeatResponse(success=True)
     
     def SyncMessagesFromLeader(self, request, context):
@@ -329,7 +333,6 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         self.messages_dict = protobuf_list_to_object(request.messages, Message, "mid")
         print(f"    Received {len(request.messages)} messages from leader server")
         save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
-        # TODO: Directly saving leader's message_dict. Need to merge with persistant version   
         return chat_pb2.MessageSyncResponse(success=True)
 
     def SyncUsersFromLeader(self, request, context):
@@ -338,7 +341,6 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         print(f"    Received {len(request.users)} users from leader server")
         self.users_dict = protobuf_list_to_object(request.users, User, "uid")
         save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
-        # TODO: Directly saving leader's message_dict. Need to merge with persistant version   
         return chat_pb2.UserSyncResponse(success=True)
     
     def SyncReplicaListFromLeader(self, request, context):
