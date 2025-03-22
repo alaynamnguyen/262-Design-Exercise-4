@@ -277,7 +277,7 @@
         "text": "beta\ngamma\nbinomial\nnormal\nuniform\nexpo\nbernoulli\npoisson\nchi squared\nlog normal\nmultinomial\nbivariate\nhypergeometric\nnegative binomial\nunNAMED :D\noh yes geometric",
         "mid": "e271ef58-e0bd-48de-b2d1-a02823779fdb",
         "timestamp": "2025-02-12 01:44:50.187377",
-        "receiver_read": false
+        "receiver_read": true
     },
     "8e617a51-f7af-4de7-b2a8-330218a9b52c": {
         "sender": "e6d0fe62-c348-4aff-9b31-d68fd1fcbd98",
@@ -287,7 +287,7 @@
         "text": "chebyshev\ninterpolation\nquadrature\nnewton's method\nsecant method\node\nlegendre polynomial\nbasis\nclenshaw curtis\ngauss hermite\ninterior points\nsimplex method\nrunge kutta",
         "mid": "8e617a51-f7af-4de7-b2a8-330218a9b52c",
         "timestamp": "2025-02-12 01:52:34.662388",
-        "receiver_read": false
+        "receiver_read": true
     },
     "e9c63dd2-f023-41e8-8ca5-56b978967687": {
         "sender": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
@@ -307,7 +307,7 @@
         "text": "yinannnnnn",
         "mid": "e9dd9528-dd1e-4c9f-b651-d21f4d08a889",
         "timestamp": "2025-02-12 12:17:39.624926",
-        "receiver_read": false
+        "receiver_read": true
     },
     "ef0ef61d-3506-4056-95e4-bfffd83126bf": {
         "sender": "1ca095ce-91a3-4bdb-bf97-243f4f9c881e",
@@ -357,6 +357,46 @@
         "text": "luc to jim",
         "mid": "4a94ffdb-034a-45d1-898d-59d4716cd050",
         "timestamp": "2025-03-22 14:46:19.811660",
+        "receiver_read": false
+    },
+    "1170e883-3e68-4ef4-afa5-5d57f2a255a5": {
+        "sender": "e6d0fe62-c348-4aff-9b31-d68fd1fcbd98",
+        "receiver": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
+        "sender_username": "alayna",
+        "receiver_username": "yinan",
+        "text": "are you excited for allston fish",
+        "mid": "1170e883-3e68-4ef4-afa5-5d57f2a255a5",
+        "timestamp": "2025-03-22 15:51:59.984114",
+        "receiver_read": true
+    },
+    "691dcf93-1437-40a3-94e3-67a43fa1adc6": {
+        "sender": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
+        "receiver": "e6d0fe62-c348-4aff-9b31-d68fd1fcbd98",
+        "sender_username": "yinan",
+        "receiver_username": "alayna",
+        "text": "YES 250!",
+        "mid": "691dcf93-1437-40a3-94e3-67a43fa1adc6",
+        "timestamp": "2025-03-22 15:52:38.301585",
+        "receiver_read": true
+    },
+    "b1c175a5-7e66-4099-870d-bea7b9b820a6": {
+        "sender": "e6d0fe62-c348-4aff-9b31-d68fd1fcbd98",
+        "receiver": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
+        "sender_username": "alayna",
+        "receiver_username": "yinan",
+        "text": "are you hungry",
+        "mid": "b1c175a5-7e66-4099-870d-bea7b9b820a6",
+        "timestamp": "2025-03-22 15:55:06.858661",
+        "receiver_read": false
+    },
+    "38ef2027-e527-4a18-95d2-377bf5824621": {
+        "sender": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
+        "receiver": "e6d0fe62-c348-4aff-9b31-d68fd1fcbd98",
+        "sender_username": "yinan",
+        "receiver_username": "alayna",
+        "text": "Hi there 250!",
+        "mid": "38ef2027-e527-4a18-95d2-377bf5824621",
+        "timestamp": "2025-03-22 15:55:08.267473",
         "receiver_read": false
     }
 }

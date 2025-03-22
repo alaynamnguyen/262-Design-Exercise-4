@@ -93,13 +93,11 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
                     with grpc.insecure_channel(self.leader_address) as channel:
                         stub = chat_pb2_grpc.ChatServiceStub(channel)
                         print(f"Sending heartbeat request to leader {self.leader_address}")
-                        request = chat_pb2.HeartbeatRequest(server_id=f"{self.local_ip}:{self.local_port}")
+                        request = chat_pb2.HeartbeatRequest(server_id=self.local_address)
                         response = stub.Heartbeat(request)
                         assert(response.success)
                 except Exception as e:
                     print(f"Heartbeat failed: {e}")
-                    print("LEADER DOWN OH NO!!!!!!")
-                    # TODO handle leader election
                     self.leader_election()
                     print(f"Im leader: {self.is_leader}")
                     if self.is_leader: break
@@ -107,6 +105,32 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
                 time.sleep(self.heartbeat_interval)
 
         threading.Thread(target=heartbeat_loop, daemon=True).start()
+
+    def start_leader_heartbeat_loop(self):
+        def leader_heartbeat_loop():
+            replica_down = False
+            while True:
+                for replica in self.replica_listt:
+                    try:
+                        with grpc.insecure_channel(replica) as channel:
+                            stub = chat_pb2_grpc.ChatServiceStub(channel)
+                            print(f"Sending heartbeat request to replica {replica}")
+                            request = chat_pb2.HeartbeatRequest(server_id=self.leader_address)
+                            response = stub.Heartbeat(request)
+                            assert(response.success)
+                    except Exception as e:
+                        replica_down = True
+                        self.replica_list.remove(replica)
+                        print(f"Replica down {replica}, removed from replica_list")
+                
+                # If replica list changed, propogate updated list to all other replicas
+                if replica_down:
+                    for replica in self.replica_list:
+                        self.push_replica_list_to_replica(replica)
+
+                time.sleep(self.heartbeat_interval)
+
+        threading.Thread(target=leader_heartbeat_loop, daemon=True).start()
 
     def leader_election(self):
         print("Calling Leader Election")
@@ -134,6 +158,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         print("Calling on_server_start")
         if self.is_leader:  # Leader server initialization
             self.replica_list = [args.leader_address] # Leader is included in the replica_list
+            self.start_leader_heartbeat_loop()
         else:  # Replica server initialization
             with grpc.insecure_channel(f"{self.leader_ip}:{self.leader_port}") as channel:
                 stub = chat_pb2_grpc.ChatServiceStub(channel)

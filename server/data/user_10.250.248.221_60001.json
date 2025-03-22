@@ -146,7 +146,9 @@
         "sent_messages": [
             "a2117e44-1804-4e47-8471-5a8774178f00",
             "e271ef58-e0bd-48de-b2d1-a02823779fdb",
-            "8e617a51-f7af-4de7-b2a8-330218a9b52c"
+            "8e617a51-f7af-4de7-b2a8-330218a9b52c",
+            "1170e883-3e68-4ef4-afa5-5d57f2a255a5",
+            "b1c175a5-7e66-4099-870d-bea7b9b820a6"
         ],
         "active": true
     },
@@ -157,11 +159,14 @@
         "received_messages": [
             "e271ef58-e0bd-48de-b2d1-a02823779fdb",
             "8e617a51-f7af-4de7-b2a8-330218a9b52c",
-            "e9dd9528-dd1e-4c9f-b651-d21f4d08a889"
+            "e9dd9528-dd1e-4c9f-b651-d21f4d08a889",
+            "b1c175a5-7e66-4099-870d-bea7b9b820a6"
         ],
         "sent_messages": [
             "66f50aa8-1eb8-4525-9a83-35882bd7118d",
-            "e9dd9528-dd1e-4c9f-b651-d21f4d08a889"
+            "e9dd9528-dd1e-4c9f-b651-d21f4d08a889",
+            "691dcf93-1437-40a3-94e3-67a43fa1adc6",
+            "38ef2027-e527-4a18-95d2-377bf5824621"
         ],
         "active": true
     },
