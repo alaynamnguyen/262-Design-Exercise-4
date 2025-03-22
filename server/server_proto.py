@@ -15,7 +15,8 @@ from controller.messages import get_message_by_mid, get_received_messages_id, ge
 from model import User, Message
 from utils import dict_to_object_recursive, object_to_dict_recursive, protobuf_list_to_object, object_to_protobuf_list
 import socket
-
+import threading
+import time
 
 # Load config
 config = configparser.ConfigParser()
@@ -74,14 +75,58 @@ def hash_password(password):
 
 class ChatService(chat_pb2_grpc.ChatServiceServicer):
     
-    def __init__(self, is_leader, local_ip, local_port, leader_ip, leader_port):
+    def __init__(self, is_leader, local_ip, local_port, leader_ip, leader_port, heartbeat_interval):
         """Initializes the ChatService with user and message data."""
         self.is_leader = is_leader
         self.local_ip = local_ip
         self.local_port = local_port
+        self.local_address = f"{self.local_ip}:{self.local_port}"
         self.leader_ip = leader_ip
         self.leader_port = leader_port
+        self.leader_address = f"{self.leader_ip}:{self.leader_port}"
         self.users_dict, self.messages_dict = load_users_and_messages(self.local_ip, self.local_port)  # Load users and messages from process specific persistent storage
+        self.heartbeat_interval = heartbeat_interval
+
+    def start_heartbeat_loop(self):
+        """Start sending heartbeat pings to the leader on a background thread."""
+        def heartbeat_loop():
+            while True:
+                try:
+                    with grpc.insecure_channel(self.leader_address) as channel:
+                        stub = chat_pb2_grpc.ChatServiceStub(channel)
+                        print(f"Sending heartbeat request to leader {self.leader_address}")
+                        request = chat_pb2.HeartbeatRequest(server_id=f"{self.local_ip}:{self.local_port}")
+                        response = stub.Heartbeat(request)
+                        assert(response.success)
+                except Exception as e:
+                    print(f"Heartbeat failed: {e}")
+                    print("LEADER DOWN OH NO!!!!!!")
+                    # TODO handle leader election
+                    self.leader_election()
+                    print(f"Im leader: {self.is_leader}")
+                    if self.is_leader: break
+
+                time.sleep(self.heartbeat_interval)
+
+        threading.Thread(target=heartbeat_loop, daemon=True).start()
+
+    def leader_election(self):
+        print("Calling Leader Election")
+        # Remove old leader from replica_list
+        print("    Old replica list:", self.replica_list)
+        self.replica_list.remove(self.leader_address)
+        print(f"    Removed leader replica list {self.replica_list}")
+
+        # Elect new leader (min ip/port combo from replica list)
+        new_leader_address = min(self.replica_list)
+        
+        if self.local_address == new_leader_address:
+            self.is_leader = True
+
+        # Update everyone's params to new leade
+        self.leader_ip, self.leader_port = new_leader_address.split(":")
+        self.leader_address = f"{self.leader_ip}:{self.leader_port}"
+        print("    New leader elected:", self.leader_address)
 
     def on_server_start(self):
         """Setup server when server starts"""
@@ -95,6 +140,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
                 response = stub.RegisterReplica(request)
                 # self.replica_list = response.replica_list
                 assert response.success
+            self.start_heartbeat_loop() # begin sending heartbeat requests to leader
         print(f"    ChatService __init__: replica_list={self.replica_list}")
 
         # TODO: Later. Merge users and messages from leader and persistent storage (need to discuss)
@@ -237,6 +283,10 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
 
         return chat_pb2.RegisterReplicaResponse(success=True)
     
+    def Heartbeat(self, request, context):
+        # print(f"Calling Heartbeat request from {request.server_id}")
+        return chat_pb2.HeartbeatResponse(success=True)
+    
     def SyncMessagesFromLeader(self, request, context):
         """Leader calls replica's SyncMessagesFromLeader to push messages."""
         print("Calling SyncMessagesFromLeader")
@@ -281,7 +331,7 @@ def serve(args):
     local_port = args.port if not args.is_leader else PORT
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    chat_service = ChatService(args.is_leader, local_ip, local_port, HOST, PORT)
+    chat_service = ChatService(args.is_leader, local_ip, local_port, HOST, PORT, args.hi)
     chat_pb2_grpc.add_ChatServiceServicer_to_server(chat_service, server)
 
     if args.is_leader:
@@ -289,10 +339,12 @@ def serve(args):
         print("Mode: leader, leader IP:", f"{HOST}:{PORT}")
     else:
         server.add_insecure_port(f"{local_ip}:{local_port}")  # Replica uses local ip and port from arguments
+        server.add_insecure_port(f"{HOST}:{local_port}")
         print("Mode: replica, replica IP", f"{local_ip}:{local_port}", "leader IP", f"{HOST}:{PORT}")
 
     server.start()
     chat_service.on_server_start()
+
     
     print(f"Server Proto started on port {PORT}...")
     server.wait_for_termination()
@@ -302,6 +354,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start the Chat Client with optional parameters.")
     parser.add_argument("--is-leader", action="store_true", help="Set this flag to run as a leader")
     parser.add_argument("--port", type=int, default=60001, help="Specify the port")
+    parser.add_argument("--hi", type=int, default=1)
 
     args = parser.parse_args()
     serve(args)
