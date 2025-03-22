@@ -244,7 +244,7 @@ class ChatApp:
         self.load_received_messages()
 
     def poll_for_new_messages(self):
-        """Regularly fetches new messages and syncs cache with the server."""
+        """Regularly fetches new messages and syncs cache with the server. Also polls for changes in leader address."""
         # Initially get the replica list from the known leader            
         for replica in self.replica_list:
             try:

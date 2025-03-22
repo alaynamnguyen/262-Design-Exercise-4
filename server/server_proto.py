@@ -21,7 +21,6 @@ import time
 # Load config
 config = configparser.ConfigParser()
 config.read("config.ini")
-
 HOST = config["network"]["host"]
 
 def load_users_and_messages(ip, port, is_leader):
@@ -79,7 +78,6 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 class ChatService(chat_pb2_grpc.ChatServiceServicer):
-    
     def __init__(self, is_leader, local_ip, local_port, leader_ip, leader_port, heartbeat_interval):
         """Initializes the ChatService with user and message data."""
         self.is_leader = is_leader
@@ -114,6 +112,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         threading.Thread(target=heartbeat_loop, daemon=True).start()
 
     def start_leader_heartbeat_loop(self):
+        """Start sending heartbeat pings from leader to all replicas on a background thread."""
         def leader_heartbeat_loop():
             replica_down = False
             while True:
@@ -140,6 +139,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         threading.Thread(target=leader_heartbeat_loop, daemon=True).start()
 
     def leader_election(self):
+        """Elects a new leader from the replica list."""
         print("Calling Leader Election")
         # Remove old leader from replica_list
         print("    Old replica list:", self.replica_list)
@@ -204,6 +204,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
             return chat_pb2.LoginPasswordResponse(success=True, uid=uid)
         
     def update_replicas(self, push_users, push_messages):
+        """Pushes user and message updates to all replicas."""
         for replica_address in self.replica_list:
             if replica_address != self.leader_address:
                 # push updates to replicas
@@ -274,6 +275,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         return chat_pb2.DeleteMessagesResponse(success=success)
     
     def push_messages_to_replica(self, replica_address, messages_dict):
+        """Pushes messages to a replica."""
         print("Calling push_messages_to_replica")
         with grpc.insecure_channel(replica_address) as channel:
             stub = chat_pb2_grpc.ChatServiceStub(channel)
@@ -284,6 +286,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
             assert response.success
 
     def push_users_to_replica(self, replica_address, users_dict):
+        """Pushes users to a replica."""
         print("Calling push_users_to_replica")
         with grpc.insecure_channel(replica_address) as channel:
             stub = chat_pb2_grpc.ChatServiceStub(channel)
@@ -294,6 +297,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
             assert response.success
 
     def push_replica_list_to_replica(self, replica_address):
+        """Pushes replica list to a replica."""
         print("Calling push_replica_list_to_replica")
         with grpc.insecure_channel(replica_address) as channel:
                 stub = chat_pb2_grpc.ChatServiceStub(channel)
@@ -303,6 +307,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
                 assert response.success
 
     def RegisterReplica(self, request, context):
+        """Registers a new replica with the leader and pushes out updated replica list to other replicas."""
         print("Calling RegisterReplica")
 
         # Add replica to replica_list
@@ -325,6 +330,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         return chat_pb2.RegisterReplicaResponse(success=True)
     
     def Heartbeat(self, request, context):
+        """Responds to heartbeat pings."""
         return chat_pb2.HeartbeatResponse(success=True)
     
     def SyncMessagesFromLeader(self, request, context):
@@ -344,12 +350,14 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         return chat_pb2.UserSyncResponse(success=True)
     
     def SyncReplicaListFromLeader(self, request, context):
+        """Leader calls replica's SyncReplicaListFromLeader to push replica list."""
         print("Calling SyncReplicaListFromLeader")
         self.replica_list = request.replica_list
         print(f"    Updated replica_list to {self.replica_list}")
         return chat_pb2.ReplicaListSyncResponse(success=True)
     
     def GetReplicaList(self, request, context):
+        """Returns the current replica list."""
         print("Calling GetReplicaList")
         return chat_pb2.ReplicaListResponse(
             leader_address=self.leader_address,
@@ -357,7 +365,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         )
 
 def get_local_ip():
-    """Safely get the LAN IP address of the current machine."""
+    """Get the LAN IP address of the current machine."""
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         # Doesn't need to be reachable, just used to get the correct local IP
@@ -392,10 +400,8 @@ def serve(args):
     server.start()
     chat_service.on_server_start()
 
-    
     print(f"Server Proto started on port {leader_port}...")
     server.wait_for_termination()
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start the Chat Client with optional parameters.")

@@ -328,5 +328,15 @@
         "mid": "fb5ff833-bb09-49fd-9028-87b613eb0ecb",
         "timestamp": "2025-02-12 13:07:47.352550",
         "receiver_read": false
+    },
+    "2efd43c0-8734-4b4e-9d1a-6ef96623a3ee": {
+        "sender": "659ec791-4813-4c7e-b4c7-972479284787",
+        "receiver": "b29ea4a7-7d79-4af2-978c-8240fb5d9ed2",
+        "sender_username": "luc",
+        "receiver_username": "yinan",
+        "text": "Smells like onion",
+        "mid": "2efd43c0-8734-4b4e-9d1a-6ef96623a3ee",
+        "timestamp": "2025-03-22 16:26:22.828334",
+        "receiver_read": false
     }
 }

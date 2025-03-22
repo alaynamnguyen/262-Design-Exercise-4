@@ -100,17 +100,14 @@
         "received_messages": [
             "e724e7b5-74ef-4119-bc79-fc5ab73a24b8",
             "ef0ef61d-3506-4056-95e4-bfffd83126bf",
-            "fb5ff833-bb09-49fd-9028-87b613eb0ecb",
-            "4a94ffdb-034a-45d1-898d-59d4716cd050"
+            "fb5ff833-bb09-49fd-9028-87b613eb0ecb"
         ],
         "sent_messages": [
             "264339e7-bb23-4942-a8ce-8ded1d1d7879",
             "eb20346d-98c3-4591-b87f-6c6f98a50c8d",
             "4b635f0a-2c97-4a87-b35b-c644546461d5",
             "3349cf5e-dcc3-4185-a79b-1875b4b1cfee",
-            "e724e7b5-74ef-4119-bc79-fc5ab73a24b8",
-            "26843c2f-b3da-4ba3-963e-16f00b861dee",
-            "bf76f170-68f8-4261-9d26-c4d65cb95937"
+            "e724e7b5-74ef-4119-bc79-fc5ab73a24b8"
         ],
         "active": true
     },
@@ -146,8 +143,7 @@
         "sent_messages": [
             "a2117e44-1804-4e47-8471-5a8774178f00",
             "e271ef58-e0bd-48de-b2d1-a02823779fdb",
-            "8e617a51-f7af-4de7-b2a8-330218a9b52c",
-            "1170e883-3e68-4ef4-afa5-5d57f2a255a5"
+            "8e617a51-f7af-4de7-b2a8-330218a9b52c"
         ],
         "active": true
     },
@@ -159,12 +155,11 @@
             "e271ef58-e0bd-48de-b2d1-a02823779fdb",
             "8e617a51-f7af-4de7-b2a8-330218a9b52c",
             "e9dd9528-dd1e-4c9f-b651-d21f4d08a889",
-            "1170e883-3e68-4ef4-afa5-5d57f2a255a5"
+            "2efd43c0-8734-4b4e-9d1a-6ef96623a3ee"
         ],
         "sent_messages": [
             "66f50aa8-1eb8-4525-9a83-35882bd7118d",
-            "e9dd9528-dd1e-4c9f-b651-d21f4d08a889",
-            "691dcf93-1437-40a3-94e3-67a43fa1adc6"
+            "e9dd9528-dd1e-4c9f-b651-d21f4d08a889"
         ],
         "active": true
     },
@@ -179,16 +174,14 @@
         ],
         "active": true
     },
-    "95d08bda-b02b-4a38-bc2b-50188cb447cd": {
-        "uid": "95d08bda-b02b-4a38-bc2b-50188cb447cd",
+    "659ec791-4813-4c7e-b4c7-972479284787": {
+        "uid": "659ec791-4813-4c7e-b4c7-972479284787",
         "username": "luc",
         "password": "d74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1",
-        "received_messages": [
-            "bf76f170-68f8-4261-9d26-c4d65cb95937"
-        ],
+        "received_messages": [],
         "sent_messages": [
-            "4a94ffdb-034a-45d1-898d-59d4716cd050"
+            "2efd43c0-8734-4b4e-9d1a-6ef96623a3ee"
         ],
-        "active": false
+        "active": true
     }
 }

@@ -154,7 +154,8 @@
         "received_messages": [
             "e271ef58-e0bd-48de-b2d1-a02823779fdb",
             "8e617a51-f7af-4de7-b2a8-330218a9b52c",
-            "e9dd9528-dd1e-4c9f-b651-d21f4d08a889"
+            "e9dd9528-dd1e-4c9f-b651-d21f4d08a889",
+            "2efd43c0-8734-4b4e-9d1a-6ef96623a3ee"
         ],
         "sent_messages": [
             "66f50aa8-1eb8-4525-9a83-35882bd7118d",
@@ -170,6 +171,16 @@
         "sent_messages": [
             "ef0ef61d-3506-4056-95e4-bfffd83126bf",
             "fb5ff833-bb09-49fd-9028-87b613eb0ecb"
+        ],
+        "active": true
+    },
+    "659ec791-4813-4c7e-b4c7-972479284787": {
+        "uid": "659ec791-4813-4c7e-b4c7-972479284787",
+        "username": "luc",
+        "password": "d74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1",
+        "received_messages": [],
+        "sent_messages": [
+            "2efd43c0-8734-4b4e-9d1a-6ef96623a3ee"
         ],
         "active": true
     }
