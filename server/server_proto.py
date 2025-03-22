@@ -199,7 +199,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         else: # Create account
             print(f'    Creating account')
             uid = create_account(username, password, self.users_dict)
-            save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
+            save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict, self.is_leader)
             self.update_replicas(push_users = True, push_messages = False)
             return chat_pb2.LoginPasswordResponse(success=True, uid=uid)
         
@@ -215,7 +215,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         print("Calling DeleteAccount")
         uid = request.uid
         success = delete_account(self.users_dict, uid)
-        save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
+        save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict, self.is_leader)
         self.update_replicas(push_users = True, push_messages = False)
         return chat_pb2.DeleteAccountResponse(success=success)
    
@@ -230,7 +230,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         """Handles sending a message from one user to another."""
         print("Calling SendMessage")
         message_sent = send_message(request.sender, request.receiver_username, request.text, self.users_dict, self.messages_dict, timestamp=request.timestamp)
-        save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
+        save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict, self.is_leader)
         self.update_replicas(push_users = True, push_messages = True)
         return chat_pb2.SendMessageResponse(success=message_sent)
 
@@ -261,7 +261,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         print("Calling MarkMessageRead")
         mid = request.mid
         success = mark_message_read(self.messages_dict, mid)
-        save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
+        save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict, self.is_leader)
         self.update_replicas(push_users = False, push_messages = True)
         return chat_pb2.MarkMessageReadResponse(success=success)
 
@@ -269,7 +269,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         """Deletes multiple messages for a given user."""
         print("Calling DeleteMessages")
         success, _ = delete_messages(self.users_dict, self.messages_dict, request.mids, uid=request.uid)
-        save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
+        save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict, self.is_leader)
         self.update_replicas(push_users = True, push_messages = True)
         return chat_pb2.DeleteMessagesResponse(success=success)
     
@@ -332,7 +332,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         print("Calling SyncMessagesFromLeader")
         self.messages_dict = protobuf_list_to_object(request.messages, Message, "mid")
         print(f"    Received {len(request.messages)} messages from leader server")
-        save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
+        save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict, self.is_leader)
         return chat_pb2.MessageSyncResponse(success=True)
 
     def SyncUsersFromLeader(self, request, context):
@@ -340,7 +340,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         print("Calling SyncUsersFromLeader")
         print(f"    Received {len(request.users)} users from leader server")
         self.users_dict = protobuf_list_to_object(request.users, User, "uid")
-        save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
+        save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict, self.is_leader)
         return chat_pb2.UserSyncResponse(success=True)
     
     def SyncReplicaListFromLeader(self, request, context):
