@@ -26,6 +26,16 @@ service ChatService {
     rpc SyncReplicaListFromLeader(ReplicaListSyncRequest) returns (ReplicaListSyncResponse);
     rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
     rpc ElectLeader(ElectLeaderRequest) returns (ElectLeaderResponse);
+
+    // Client asks for replica list
+    rpc GetReplicaList(Empty) returns (ReplicaListResponse);
+}
+
+message Empty {}
+
+message ReplicaListResponse {
+    string leader_address = 1;
+    repeated string replica_list = 2;
 }
 
 // Replica flow

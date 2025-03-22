@@ -18,23 +18,22 @@ config.read("config.ini")
 
 # **Use argparse for flexible flag-based arguments**
 parser = argparse.ArgumentParser(description="Start the Chat Client with optional parameters.")
-parser.add_argument("--server-ip", type=str, help="Specify the server IP address")
-parser.add_argument("--poll-frequency", type=int, help="Set the polling frequency in milliseconds")
+parser.add_argument("--server-address", type=str, default="10.250.248.221:60000", help="Specify the server IP address")
+parser.add_argument("--poll-frequency", type=int, default=5000, help="Set the polling frequency in milliseconds")
 
 args = parser.parse_args()
 
 # **Use provided arguments or fallback to config.ini**
-HOST = args.server_ip if args.server_ip else config["network"]["host"]
+SERVER_ADDRESS = args.server_address
+HOST, PORT = SERVER_ADDRESS.split(":")
 POLL_FREQUENCY = args.poll_frequency if args.poll_frequency else 10000  # Default to 10s polling
-PORT = int(config["network"]["port"])
-SERVER_ADDRESS = f"{HOST}:{PORT}"
 
 def hash_password(password):
     """Hashes a password using SHA-256 before sending to the server."""
     return hashlib.sha256(password.encode()).hexdigest()
 
 class ChatApp:
-    def __init__(self, root):
+    def __init__(self, root, leader_address):
         self.root = root
         self.root.title("Message App")
         self.root.geometry("600x400")
@@ -53,6 +52,8 @@ class ChatApp:
         # Counters
         self.total_unread_count = 0
         self.unfetched_unread_count = 0
+        self.leader_address = leader_address
+        self.replica_list = [self.leader_address]
 
         self.create_login_screen()
 
@@ -82,7 +83,7 @@ class ChatApp:
             messagebox.showerror("Error", "Username cannot contain commas.")
             return
 
-        with grpc.insecure_channel(SERVER_ADDRESS) as channel:
+        with grpc.insecure_channel(self.leader_address) as channel:
             stub = chat_pb2_grpc.ChatServiceStub(channel)
             request = chat_pb2.LoginUsernameRequest(username=username)
             response = stub.LoginUsername(request)
@@ -116,7 +117,7 @@ class ChatApp:
         username = self.username.get()
         hashed_password = hash_password(password)
 
-        with grpc.insecure_channel(SERVER_ADDRESS) as channel:
+        with grpc.insecure_channel(self.leader_address) as channel:
             stub = chat_pb2_grpc.ChatServiceStub(channel)
             request = chat_pb2.LoginPasswordRequest(username=username, password=hashed_password)
             
@@ -161,7 +162,7 @@ class ChatApp:
 
     def delete_account(self):
         """Deletes the user account and closes the application."""
-        response = communication.delete_account(SERVER_ADDRESS, self.client_uid)
+        response = communication.delete_account(self.leader_address, self.client_uid)
         if response["success"]:
             messagebox.showinfo("Success", "Account successfully deleted. Closing application.")
             self.root.quit()  # Close the entire Tkinter app
@@ -214,7 +215,7 @@ class ChatApp:
     def list_accounts(self):
         """Fetches and displays accounts based on wildcard search."""
         wildcard = self.search_entry.get().strip() or "*"
-        response = communication.list_accounts(SERVER_ADDRESS, wildcard)
+        response = communication.list_accounts(self.leader_address, wildcard)
         self.recipient_listbox.delete(0, tk.END)
         for account in response["accounts"]:
             self.recipient_listbox.insert(tk.END, account)
@@ -237,15 +238,30 @@ class ChatApp:
             messagebox.showerror("Error", "Message exceeds 280 characters.")
             return
 
-        communication.send_message(SERVER_ADDRESS, self.client_uid, recipient, message_text, str(datetime.now()))
+        communication.send_message(self.leader_address, self.client_uid, recipient, message_text, str(datetime.now()))
         
         messagebox.showinfo("Success", "Message sent successfully!")
         self.load_received_messages()
 
     def poll_for_new_messages(self):
         """Regularly fetches new messages and syncs cache with the server."""
+        # Initially get the replica list from the known leader            
+        for replica in self.replica_list:
+            try:
+                with grpc.insecure_channel(replica) as channel:
+                    stub = chat_pb2_grpc.ChatServiceStub(channel)
+                    response = stub.GetReplicaList(chat_pb2.Empty())
+                    # Update leader address and replica list from what the response said
+                    self.leader_address = response.leader_address
+                    self.replica_list = list(response.replica_list)
+                    print(f"Got info from {replica}, leader:", self.leader_address, self.replica_list)
+                    break
+            except grpc.RpcError as e:
+                print(f"{replica} not reachable")
+                continue
+
         if self.current_page == "received":
-            response = communication.get_messages(SERVER_ADDRESS, self.client_uid, True)
+            response = communication.get_messages(self.leader_address, self.client_uid, True)
             mids = response["mids"]
 
             # Remove messages from cache that no longer exist on server
@@ -259,17 +275,16 @@ class ChatApp:
             # Fetch new messages
             new_mids = [mid for mid in mids if mid not in self.received_message_cache]
             for mid in new_mids:
-                self.received_message_cache[mid] = communication.get_message_by_mid(SERVER_ADDRESS, mid)
+                self.received_message_cache[mid] = communication.get_message_by_mid(self.leader_address, mid)
 
             # Update unread message counters correctly
             self.total_unread_count = sum(1 for msg in self.received_message_cache.values() if not msg["receiver_read"])
             
             # Unfetched count should track messages that are unread but not yet displayed
             self.unfetched_unread_count = sum(1 for mid in mids if mid not in self.displayed_mids and not self.received_message_cache[mid]["receiver_read"])
-
             self.unread_label.config(text=f"{self.total_unread_count} unread messages ({self.unfetched_unread_count} unfetched)")
 
-        self.root.after(POLL_FREQUENCY, self.poll_for_new_messages)  # Poll every 10 seconds
+        self.root.after(POLL_FREQUENCY, self.poll_for_new_messages)
 
     def load_received_messages(self):
         """Fetch and display only read messages. Resets fetch tracking when switching to 'Received'."""
@@ -286,7 +301,7 @@ class ChatApp:
         self.displayed_mids.clear()
 
         # Fetch all received message IDs
-        response = communication.get_messages(SERVER_ADDRESS, self.client_uid, True)
+        response = communication.get_messages(self.leader_address, self.client_uid, True)
         mids = response["mids"]
 
         # Reset caches to ensure fresh data is stored
@@ -294,7 +309,7 @@ class ChatApp:
 
         # Fetch messages by MID and store them in the cache
         for mid in mids:
-            self.received_message_cache[mid] = communication.get_message_by_mid(SERVER_ADDRESS, mid)
+            self.received_message_cache[mid] = communication.get_message_by_mid(self.leader_address, mid)
 
         # Sort messages by timestamp (latest first)
         sorted_messages = sorted(self.received_message_cache.values(), key=lambda x: x["timestamp"], reverse=True)
@@ -367,13 +382,13 @@ class ChatApp:
             return
 
         # **Refetch received messages to ensure up-to-date data**
-        response = communication.get_messages(SERVER_ADDRESS, self.client_uid, True)
+        response = communication.get_messages(self.leader_address, self.client_uid, True)
         mids = response["mids"]
 
         # **Ensure message cache is up-to-date before fetching unread**
         for mid in mids:
             if mid not in self.received_message_cache:
-                self.received_message_cache[mid] = communication.get_message_by_mid(SERVER_ADDRESS, mid)
+                self.received_message_cache[mid] = communication.get_message_by_mid(self.leader_address, mid)
 
         # **Get only unread messages that are NOT already displayed**
         unread_messages = sorted(
@@ -410,7 +425,7 @@ class ChatApp:
 
         tk.Button(control_frame, text="Delete Selected", command=self.delete_selected_messages, bg="red").pack(side=tk.RIGHT, padx=5)
 
-        response = communication.get_messages(SERVER_ADDRESS, self.client_uid, False)
+        response = communication.get_messages(self.leader_address, self.client_uid, False)
         mids = response["mids"]
 
         new_messages = []
@@ -419,7 +434,7 @@ class ChatApp:
                 new_messages.append(mid)
 
         for mid in new_messages:
-            self.sent_message_cache[mid] = communication.get_message_by_mid(SERVER_ADDRESS, mid)
+            self.sent_message_cache[mid] = communication.get_message_by_mid(self.leader_address, mid)
 
         # Sort messages so newest appear first
         sorted_messages = sorted(self.sent_message_cache.values(), key=lambda x: x["timestamp"], reverse=True)
@@ -497,7 +512,7 @@ class ChatApp:
             messagebox.showerror("Error", "No messages selected for deletion.")
             return
 
-        communication.delete_messages(SERVER_ADDRESS, self.client_uid, list(self.selected_messages))
+        communication.delete_messages(self.leader_address, self.client_uid, list(self.selected_messages))
 
         # Remove from local cache
         for mid in self.selected_messages:
@@ -513,7 +528,7 @@ class ChatApp:
 
     def mark_message_read(self, mid):
         """Marks a message as read on both the client and server without refreshing everything."""
-        communication.mark_message_read(SERVER_ADDRESS, mid)
+        communication.mark_message_read(self.leader_address, mid)
 
         if mid in self.received_message_cache:
             self.received_message_cache[mid]["receiver_read"] = True
@@ -548,5 +563,5 @@ if __name__ == "__main__":
         print(f"Starting ChatApp with default server from config: {HOST}:{PORT}")
     
     root = tk.Tk()
-    app = ChatApp(root)
+    app = ChatApp(root, SERVER_ADDRESS)
     root.mainloop()

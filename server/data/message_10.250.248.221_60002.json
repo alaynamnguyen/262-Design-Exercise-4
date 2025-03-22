@@ -328,5 +328,35 @@
         "mid": "fb5ff833-bb09-49fd-9028-87b613eb0ecb",
         "timestamp": "2025-02-12 13:07:47.352550",
         "receiver_read": false
+    },
+    "26843c2f-b3da-4ba3-963e-16f00b861dee": {
+        "sender": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "receiver": "95d08bda-b02b-4a38-bc2b-50188cb447cd",
+        "sender_username": "jim",
+        "receiver_username": "luc",
+        "text": "Hi luc from jim",
+        "mid": "26843c2f-b3da-4ba3-963e-16f00b861dee",
+        "timestamp": "2025-03-22 14:42:43.029334",
+        "receiver_read": true
+    },
+    "bf76f170-68f8-4261-9d26-c4d65cb95937": {
+        "sender": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "receiver": "95d08bda-b02b-4a38-bc2b-50188cb447cd",
+        "sender_username": "jim",
+        "receiver_username": "luc",
+        "text": "jim to luc",
+        "mid": "bf76f170-68f8-4261-9d26-c4d65cb95937",
+        "timestamp": "2025-03-22 14:46:05.949277",
+        "receiver_read": false
+    },
+    "4a94ffdb-034a-45d1-898d-59d4716cd050": {
+        "sender": "95d08bda-b02b-4a38-bc2b-50188cb447cd",
+        "receiver": "90c20039-0057-49f2-95d5-7682ba0777d3",
+        "sender_username": "luc",
+        "receiver_username": "jim",
+        "text": "luc to jim",
+        "mid": "4a94ffdb-034a-45d1-898d-59d4716cd050",
+        "timestamp": "2025-03-22 14:46:19.811660",
+        "receiver_read": false
     }
 }

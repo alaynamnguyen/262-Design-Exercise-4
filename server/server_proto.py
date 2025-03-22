@@ -127,6 +127,8 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         self.leader_address = f"{self.leader_ip}:{self.leader_port}"
         print("    New leader elected:", self.leader_address)
 
+        # TODO let all clients know what the address of the new leader is 
+
     def on_server_start(self):
         """Setup server when server starts"""
         print("Calling on_server_start")
@@ -168,15 +170,24 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         else: # Create account
             print(f'    Creating account')
             uid = create_account(username, password, self.users_dict)
-            save_users_and_messages(self.local, self.local_port, self.users_dict, self.messages_dict)
+            save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
+            self.update_replicas(push_users = True, push_messages = False)
             return chat_pb2.LoginPasswordResponse(success=True, uid=uid)
+        
+    def update_replicas(self, push_users, push_messages):
+        for replica_address in self.replica_list:
+            if replica_address != self.leader_address:
+                # push updates to replicas
+                if push_messages: self.push_messages_to_replica(replica_address, self.messages_dict)
+                if push_users: self.push_users_to_replica(replica_address, self.users_dict)
 
     def DeleteAccount(self, request, context):
         """Deletes a user account by UID."""
         print("Calling DeleteAccount")
         uid = request.uid
         success = delete_account(self.users_dict, uid)
-        save_users_and_messages(self.local, self.local_port, self.users_dict, self.messages_dict)
+        save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
+        self.update_replicas(push_users = True, push_messages = False)
         return chat_pb2.DeleteAccountResponse(success=success)
    
     def ListAccounts(self, request, context):
@@ -191,6 +202,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         print("Calling SendMessage")
         message_sent = send_message(request.sender, request.receiver_username, request.text, self.users_dict, self.messages_dict, timestamp=request.timestamp)
         save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
+        self.update_replicas(push_users = True, push_messages = True)
         return chat_pb2.SendMessageResponse(success=message_sent)
 
     def GetSentMessages(self, request, context):
@@ -221,6 +233,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         mid = request.mid
         success = mark_message_read(self.messages_dict, mid)
         save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
+        self.update_replicas(push_users = False, push_messages = True)
         return chat_pb2.MarkMessageReadResponse(success=success)
 
     def DeleteMessages(self, request, context):
@@ -228,6 +241,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         print("Calling DeleteMessages")
         success, _ = delete_messages(self.users_dict, self.messages_dict, request.mids, uid=request.uid)
         save_users_and_messages(self.local_ip, self.local_port, self.users_dict, self.messages_dict)
+        self.update_replicas(push_users = True, push_messages = True)
         return chat_pb2.DeleteMessagesResponse(success=success)
     
     def push_messages_to_replica(self, replica_address, messages_dict):
@@ -268,15 +282,14 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
             self.replica_list.append(replica_address)
         print(f"    Added replica to replica_list: self.replica_list={self.replica_list}")
 
-        # Push messages to replica
+        # Push messages and users to new replica
         self.push_messages_to_replica(replica_address, self.messages_dict)
-        # Push users to replica
         self.push_users_to_replica(replica_address, self.users_dict)
         print(f"    Pushed messages and users to replica")
 
         # Push replica _list to old replicas
         for replica_address in self.replica_list:
-            if replica_address != f"{self.leader_ip}:{self.leader_port}":
+            if replica_address != self.leader_address:
                 # Only send updated replicas to non-leaders
                 self.push_replica_list_to_replica(replica_address)
 
@@ -309,6 +322,13 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
         self.replica_list = request.replica_list
         print(f"    Updated replica_list to {self.replica_list}")
         return chat_pb2.ReplicaListSyncResponse(success=True)
+    
+    def GetReplicaList(self, request, context):
+        print("Calling GetReplicaList")
+        return chat_pb2.ReplicaListResponse(
+            leader_address=self.leader_address,
+            replica_list=self.replica_list
+        )
 
 def get_local_ip():
     """Safely get the LAN IP address of the current machine."""
@@ -349,6 +369,7 @@ def serve(args):
     
     print(f"Server Proto started on port {leader_port}...")
     server.wait_for_termination()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start the Chat Client with optional parameters.")

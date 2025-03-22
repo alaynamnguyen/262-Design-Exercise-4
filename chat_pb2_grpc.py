@@ -114,6 +114,11 @@ class ChatServiceStub(object):
                 request_serializer=chat__pb2.ElectLeaderRequest.SerializeToString,
                 response_deserializer=chat__pb2.ElectLeaderResponse.FromString,
                 _registered_method=True)
+        self.GetReplicaList = channel.unary_unary(
+                '/chat.ChatService/GetReplicaList',
+                request_serializer=chat__pb2.Empty.SerializeToString,
+                response_deserializer=chat__pb2.ReplicaListResponse.FromString,
+                _registered_method=True)
 
 
 class ChatServiceServicer(object):
@@ -221,6 +226,13 @@ class ChatServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetReplicaList(self, request, context):
+        """Client asks for replica list
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ChatServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -303,6 +315,11 @@ def add_ChatServiceServicer_to_server(servicer, server):
                     servicer.ElectLeader,
                     request_deserializer=chat__pb2.ElectLeaderRequest.FromString,
                     response_serializer=chat__pb2.ElectLeaderResponse.SerializeToString,
+            ),
+            'GetReplicaList': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetReplicaList,
+                    request_deserializer=chat__pb2.Empty.FromString,
+                    response_serializer=chat__pb2.ReplicaListResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -737,6 +754,33 @@ class ChatService(object):
             '/chat.ChatService/ElectLeader',
             chat__pb2.ElectLeaderRequest.SerializeToString,
             chat__pb2.ElectLeaderResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetReplicaList(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/chat.ChatService/GetReplicaList',
+            chat__pb2.Empty.SerializeToString,
+            chat__pb2.ReplicaListResponse.FromString,
             options,
             channel_credentials,
             insecure,
