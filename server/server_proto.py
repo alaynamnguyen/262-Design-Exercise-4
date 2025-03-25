@@ -117,6 +117,8 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
             replica_down = False
             while True:
                 for replica in self.replica_list:
+                    if replica == self.leader_address:  # Only send heartbeat check to replicas and skip leader
+                        continue
                     try:
                         with grpc.insecure_channel(replica) as channel:
                             stub = chat_pb2_grpc.ChatServiceStub(channel)
