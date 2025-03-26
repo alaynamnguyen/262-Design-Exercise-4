@@ -154,8 +154,7 @@
         "received_messages": [
             "e271ef58-e0bd-48de-b2d1-a02823779fdb",
             "8e617a51-f7af-4de7-b2a8-330218a9b52c",
-            "e9dd9528-dd1e-4c9f-b651-d21f4d08a889",
-            "2efd43c0-8734-4b4e-9d1a-6ef96623a3ee"
+            "e9dd9528-dd1e-4c9f-b651-d21f4d08a889"
         ],
         "sent_messages": [
             "66f50aa8-1eb8-4525-9a83-35882bd7118d",
@@ -172,104 +171,6 @@
             "ef0ef61d-3506-4056-95e4-bfffd83126bf",
             "fb5ff833-bb09-49fd-9028-87b613eb0ecb"
         ],
-        "active": true
-    },
-    "659ec791-4813-4c7e-b4c7-972479284787": {
-        "uid": "659ec791-4813-4c7e-b4c7-972479284787",
-        "username": "luc",
-        "password": "d74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1",
-        "received_messages": [],
-        "sent_messages": [
-            "2efd43c0-8734-4b4e-9d1a-6ef96623a3ee"
-        ],
-        "active": true
-    },
-    "946a16d9-13b4-472a-a80a-4937fce8e5f1": {
-        "uid": "946a16d9-13b4-472a-a80a-4937fce8e5f1",
-        "username": "new_user",
-        "password": "new_password",
-        "received_messages": [],
-        "sent_messages": [],
-        "active": true
-    },
-    "3dcdeaee-4294-422a-9dfa-5692a3739fe1": {
-        "uid": "3dcdeaee-4294-422a-9dfa-5692a3739fe1",
-        "username": "valid_user",
-        "password": "correct_password",
-        "received_messages": [],
-        "sent_messages": [],
-        "active": true
-    },
-    "8166a4f8-b26a-4bb2-a9aa-3efeea7c09de": {
-        "uid": "8166a4f8-b26a-4bb2-a9aa-3efeea7c09de",
-        "username": "wrong_password_user",
-        "password": "correct_password",
-        "received_messages": [],
-        "sent_messages": [],
-        "active": true
-    },
-    "a80d7561-ad13-4351-bc93-0f75dcfb6f20": {
-        "uid": "a80d7561-ad13-4351-bc93-0f75dcfb6f20",
-        "username": "test_user",
-        "password": "test_password",
-        "received_messages": [],
-        "sent_messages": [
-            "81497b08-a4bb-41a8-aa5e-eb4b10843cfa",
-            "6c0e431b-6ed2-4def-975d-2f3d8b8d5b16",
-            "a67ccf3c-0e77-4bc8-b95c-ae3e7d68b153",
-            "a81d4968-38ba-451d-a5d1-b3b901a3b192",
-            "23c273bd-557b-4232-a823-6ce6e2760bf2",
-            "ad6fdde6-683a-43c3-adf4-3088230f39a4",
-            "110a9365-0549-47f3-8d94-40177e0cdd7c",
-            "090d5033-df9c-4b89-94ee-58c81ce9356c",
-            "938f19aa-73cd-488c-9c81-1961a21a7b1a",
-            "13db286a-3c51-4517-bb32-d8217ef9582b",
-            "35ecf057-d001-47f2-ae75-304613010a96"
-        ],
-        "active": true
-    },
-    "c6a4fdd0-6432-407b-917e-9e11cacf9272": {
-        "uid": "c6a4fdd0-6432-407b-917e-9e11cacf9272",
-        "username": "receiver_user",
-        "password": "receiver_password",
-        "received_messages": [
-            "81497b08-a4bb-41a8-aa5e-eb4b10843cfa",
-            "6c0e431b-6ed2-4def-975d-2f3d8b8d5b16",
-            "a67ccf3c-0e77-4bc8-b95c-ae3e7d68b153",
-            "a81d4968-38ba-451d-a5d1-b3b901a3b192",
-            "23c273bd-557b-4232-a823-6ce6e2760bf2",
-            "ad6fdde6-683a-43c3-adf4-3088230f39a4",
-            "110a9365-0549-47f3-8d94-40177e0cdd7c",
-            "090d5033-df9c-4b89-94ee-58c81ce9356c",
-            "938f19aa-73cd-488c-9c81-1961a21a7b1a",
-            "13db286a-3c51-4517-bb32-d8217ef9582b",
-            "35ecf057-d001-47f2-ae75-304613010a96"
-        ],
-        "sent_messages": [],
-        "active": true
-    },
-    "9fc0c557-0527-443e-9693-dee4975c8995": {
-        "uid": "9fc0c557-0527-443e-9693-dee4975c8995",
-        "username": "delete_test_user",
-        "password": "delete_password",
-        "received_messages": [],
-        "sent_messages": [],
-        "active": false
-    },
-    "0f7f1242-0edb-40d3-8076-d36fe3c42498": {
-        "uid": "0f7f1242-0edb-40d3-8076-d36fe3c42498",
-        "username": "new_user123",
-        "password": "new_password",
-        "received_messages": [],
-        "sent_messages": [],
-        "active": true
-    },
-    "8e6fefb2-a3ac-4e95-a400-db73a8853e87": {
-        "uid": "8e6fefb2-a3ac-4e95-a400-db73a8853e87",
-        "username": "delete_test_user",
-        "password": "delete_password",
-        "received_messages": [],
-        "sent_messages": [],
         "active": true
     }
 }
